@@ -12,9 +12,10 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get;       set; }
-        public string  Name { get; set; }
+
+        public string  Name { get; set; } = string.Empty;
         public string? Link { get; set; }
 
-        public virtual ICollection<TagDir> TagDirs { get; set; } = new List<TagDir>();
+        public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
     }
 }

@@ -24,20 +24,20 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         }
 
 
-        private ObservableCollection<UI_Dir> _uI_Childs;
+        private ObservableCollection<UI_Dir> _ui_Childs;
 
         public ObservableCollection<UI_Dir> UI_Childs
         {
-            get => _uI_Childs ??= new ObservableCollection<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
-            set => this.RaiseAndSetIfChanged(ref _uI_Childs, value);
+            get => _ui_Childs ??= new ObservableCollection<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
+            set => this.RaiseAndSetIfChanged(ref _ui_Childs, value);
         }
 
-        private ObservableCollection<UI_Tag> _uI_Tags;
+        private ObservableCollection<UI_Tag> _ui_Tags;
 
         public ObservableCollection<UI_Tag> UI_Tags
         {
-            get => _uI_Tags ??= new ObservableCollection<UI_Tag>(UI_Tag.Mapper.Map<IEnumerable<Tag>, IEnumerable<UI_Tag>>(TagDirs.Select(x => x.Tag)).ToList());
-            set => this.RaiseAndSetIfChanged(ref _uI_Tags, value);
+            get => _ui_Tags ??= new ObservableCollection<UI_Tag>(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
+            set => this.RaiseAndSetIfChanged(ref _ui_Tags, value);
         }
 
         public UI_Dir()
@@ -47,7 +47,7 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         public UI_Dir(string name, int? parentId = null, string? link = null)
         {
-            Name     = name; //.Replace("Tag group:", "");
+            Name     = name;
             ParentId = parentId;
             Link     = link;
         }

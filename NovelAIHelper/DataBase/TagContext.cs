@@ -12,16 +12,19 @@ namespace NovelAIHelper.DataBase
     {
         public DbSet<Dir>    Dirs    { get; set; }
         public DbSet<Tag>    Tags    { get; set; }
-        public DbSet<TagDir> TagDirs { get; set; }
 
         public TagContext()
         {
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
+            
         }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=NovelAIHelper;Username=postgres;Password=KuroNeko2112");
+            
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=NovelAIHelper;Username=postgres;Password=KuroNeko2112@");
         }
     }
 }

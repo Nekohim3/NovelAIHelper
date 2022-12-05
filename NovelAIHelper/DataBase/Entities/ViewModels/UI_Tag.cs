@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,14 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         {
             get => _isSelected;
             set => this.RaiseAndSetIfChanged(ref _isSelected, value);
+        }
+
+        private ObservableCollection<UI_Dir> _ui_Dirs;
+
+        public ObservableCollection<UI_Dir> UI_Dirs
+        {
+            get => _ui_Dirs ??= new ObservableCollection<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
+            set => this.RaiseAndSetIfChanged(ref _ui_Dirs, value);
         }
 
         public UI_Tag()

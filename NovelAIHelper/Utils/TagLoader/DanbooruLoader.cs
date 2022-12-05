@@ -49,10 +49,6 @@ namespace NovelAIHelper.Utils.TagDownloader
                     dir.Name = dir.Name.Remove(0, "tag group:".Length);
                 LoadDirChilds(dir, ul);
                 dirsTree.Add(dir);
-
-                //var dir = DownloadDirTree(ul);
-                //if (dir != null)
-                //    dirsTree.Add(dir);
             }
 
             return dirsTree;
@@ -69,17 +65,13 @@ namespace NovelAIHelper.Utils.TagDownloader
                     {
                         var newDir = new UI_Dir();
                         if (aNode.InnerText.ToLower().Contains("tag group:"))
-                        {
                             newDir.Name = aNode.InnerText.Remove(0, "tag group:".Length);
-                        }
                         else if (aNode.InnerText.ToLower().Contains("list of "))
-                        {
                             newDir.Name = aNode.InnerText.Remove(0, "list of ".Length);
-                        }
                         else
                         {
                             newDir.Name = aNode.InnerText;
-                            dir.TagDirs.Add(new TagDir(dir, new UI_Tag(aNode.InnerText, aNode.GetAttributeValue("href", null))));
+                            dir.Tags.Add(new UI_Tag(aNode.InnerText, aNode.GetAttributeValue("href", null)));
                         }
                         newDir.Link = aNode.GetAttributeValue("href", null);
                         dir.ChildDirs.Add(newDir);

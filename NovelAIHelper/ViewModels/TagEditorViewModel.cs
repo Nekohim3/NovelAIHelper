@@ -27,21 +27,23 @@ namespace NovelAIHelper.ViewModels
             //var loader   = new DanbooruLoader();
             //var dirsTree = loader.DownloadDirs();
             //var saved    = loader.SaveDirs(dirsTree);
-            var lst      = new DirService().GetTopDirs().ToList();
-            foreach (var x in lst)
-            {
-                Load(x);
-            }
+            var service = new DirService();
+            
+            var lst     = service.GetTopDirs().ToList();
+            //foreach (var x in lst)
+            //{
+            //    Load(x);
+            //}
         }
 
-        private void Load(UI_Dir dir)
-        {
-            var q = dir.UI_Childs;
-            var w = dir.UI_Tags;
-            foreach (var x in q)
-            {
-                Load(x);
-            }
-        }
+        //private void Load(UI_Dir dir)
+        //{
+        //    var q = dir.UI_Childs;
+        //    var w = dir.UI_Tags;
+        //    foreach (var x in q)
+        //    {
+        //        Load(x);
+        //    }
+        //}
     }
 }
