@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="NovelAIHelper.Views.MainWindow"
+        x:Class="NovelAIHelper.Views.MainWindow" WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
         Title="NovelAIHelper">
 
@@ -12,6 +12,11 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid RowDefinitions="Auto, *">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0" Margin="3">
+            <Button Content="Tags editor" Margin="3,0" Height="26" Command="{Binding TagEditorShowCmd}"/>
+            <Button Content="Settings" Margin="3,0" Height="26"/>
+        </StackPanel>
+    </Grid>
 
 </Window>

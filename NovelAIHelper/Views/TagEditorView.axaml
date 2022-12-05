@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:NovelAIHelper.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="NovelAIHelper.Views.TagEditorView" WindowStartupLocation="CenterScreen"
+        Title="TagEditorView">
+    <Design.DataContext>
+        <viewModels:TagEditorViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *">
+        <StackPanel Grid.Row="0" Margin="3" Orientation="Horizontal">
+            <Button Content="Download from Danbooru" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding DownloadFromDanbooruCmd}"/>
+        </StackPanel>
+        <TextBox Grid.Row="1" Margin="3,0" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"/>
+    </Grid>
+</Window>
