@@ -17,10 +17,9 @@ namespace NovelAIHelper
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
+                desktop.MainWindow = new MainWindow();
+                var vm = new MainWindowViewModel(desktop.MainWindow);
+                desktop.MainWindow.DataContext = vm;
             }
 
             base.OnFrameworkInitializationCompleted();

@@ -40,16 +40,22 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _ui_Tags, value);
         }
 
+        private UI_Dir _ui_Parent;
+
+        public UI_Dir UI_Parent
+        {
+            get => _ui_Parent ??= Mapper.Map<UI_Dir>(ParentDir);
+            set => this.RaiseAndSetIfChanged(ref _ui_Parent, value);
+        }
+
         public UI_Dir()
         {
 
         }
 
-        public UI_Dir(string name, int? parentId = null, string? link = null)
+        public UI_Dir(string name, int? parentId = null, string? link = null) : base(name, parentId, link)
         {
-            Name     = name;
-            ParentId = parentId;
-            Link     = link;
+
         }
     }
 }

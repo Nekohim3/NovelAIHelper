@@ -24,10 +24,25 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
 
         public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
+
+        public Dir()
+        {
+            
+        }
+
+        public Dir(string name, int? parentId = null, string? link = null)
+        {
+            Name     = name;
+            ParentId = parentId;
+            Link     = link;
+        }
+
+
         public static bool operator !=(Dir? a, Dir? b) => !(a == b);
 
         public static bool operator ==(Dir? a, Dir? b)
         {
+            if (a is null && b is null) return true;
             if (a is null || b is null) return false;
             return a.Equals(b);
         }

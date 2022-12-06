@@ -37,10 +37,9 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         }
 
-        public UI_Tag(string name, string? link = null)
+        public UI_Tag(string name, string? link = null) : base(name, link)
         {
-            Name = name;
-            Link = link;
+
         }
     }
 }

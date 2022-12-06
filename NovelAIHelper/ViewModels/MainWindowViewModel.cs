@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using Avalonia.Controls;
 using NovelAIHelper.DataBase;
 using NovelAIHelper.DataBase.Entities.DataBase;
 using NovelAIHelper.DataBase.Entities.ViewModels;
@@ -13,7 +14,8 @@ namespace NovelAIHelper.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ReactiveCommand<Unit, Unit> TagEditorShowCmd { get; }
+        private Window                      _wnd;
+        public  ReactiveCommand<Unit, Unit> TagEditorShowCmd { get; }
 
         public MainWindowViewModel()
         {
@@ -28,14 +30,19 @@ namespace NovelAIHelper.ViewModels
             //ctx.Dirs.Add(dir);
             //ctx.Tags.Add(tag);
             //ctx.SaveChanges();
-            TagEditorShowCmd =   ReactiveCommand.Create(OnTagEditorShow);
+        }
+
+        public MainWindowViewModel(Window wnd)
+        {
+            _wnd             = wnd;
+            TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
         }
 
         private void OnTagEditorShow()
         {
             var f = new TagEditorView();
-            f.DataContext = new TagEditorViewModel();
-            f.Show();
+            f.DataContext = new TagEditorViewModel(f);
+            f.ShowDialog(_wnd);
         }
     }
 }

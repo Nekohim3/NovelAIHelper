@@ -17,5 +17,16 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
         public string? Link { get; set; }
 
         public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
+
+        public Tag()
+        {
+            
+        }
+
+        public Tag(string name, string? link = null)
+        {
+            Name = name;
+            Link = link;
+        }
     }
 }

@@ -11,9 +11,15 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <StackPanel Grid.Row="0" Margin="3" Orientation="Horizontal">
+        <Grid Grid.Row="0" Grid.ColumnDefinitions="*, Auto">
+          <StackPanel Grid.Column="0" Margin="3" Orientation="Horizontal">
             <Button Content="Download from Danbooru" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding DownloadFromDanbooruCmd}"/>
-        </StackPanel>
+            <Button Content="Load tree" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding LoadTreeCmd}"/>
+          </StackPanel>
+          <StackPanel Grid.Column="1" Margin="3" Orientation="Horizontal">
+              <Button Content="Reset database" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding ResetDatabaseCmd}"/>
+            </StackPanel>
+        </Grid>
         <TextBox Grid.Row="1" Margin="3,0" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"/>
     </Grid>
 </Window>
