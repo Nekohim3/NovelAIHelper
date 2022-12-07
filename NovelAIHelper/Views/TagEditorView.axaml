@@ -21,7 +21,7 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="3*,*">
-            <TreeView Items="{Binding DirsTree}">
+            <TreeView Items="{Binding DirsTree}" SelectedItem="{Binding DirsTree.SelectedItem}" SelectionMode="Single">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding UI_Childs}">
                         <TextBlock Text="{Binding Name}"/>

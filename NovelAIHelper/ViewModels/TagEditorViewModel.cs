@@ -13,6 +13,7 @@ using MessageBox.Avalonia.Enums;
 using NovelAIHelper.DataBase;
 using NovelAIHelper.DataBase.Entities.ViewModels;
 using NovelAIHelper.DataBase.Services;
+using NovelAIHelper.Utils.Collections;
 using NovelAIHelper.Utils.TagDownloader;
 using ReactiveUI;
 
@@ -25,9 +26,9 @@ namespace NovelAIHelper.ViewModels
         public ReactiveCommand<Unit, Unit> DownloadFromDanbooruCmd { get; }
         public ReactiveCommand<Unit, Unit> ResetDatabaseCmd        { get; }
 
-        private ObservableCollection<UI_Dir> _dirsTree;
+        private ObservableCollectionWithSelectedItem<UI_Dir> _dirsTree;
 
-        public ObservableCollection<UI_Dir> DirsTree
+        public ObservableCollectionWithSelectedItem<UI_Dir> DirsTree
         {
             get => _dirsTree;
             set => this.RaiseAndSetIfChanged(ref _dirsTree, value);
@@ -54,7 +55,13 @@ namespace NovelAIHelper.ViewModels
         {
             var service = new DirService();
 
-            DirsTree = new ObservableCollection<UI_Dir>(service.GetTopDirs());
+            DirsTree = new ObservableCollectionWithSelectedItem<UI_Dir>(service.GetTopDirs());
+            DirsTree.SelectionChanged += DirsTreeOnSelectionChanged;
+        }
+
+        private void DirsTreeOnSelectionChanged(ObservableCollectionWithSelectedItem<UI_Dir> sender, UI_Dir newselection, UI_Dir oldselection)
+        {
+            
         }
 
         private async void OnResetDatabase()
@@ -65,8 +72,10 @@ namespace NovelAIHelper.ViewModels
 
         private async void OnDownloadFromDanbooru()
         {
-            if (await MessageBoxManager.GetMessageBoxStandardWindow("", "Reset database?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd) == ButtonResult.Yes)
+            var res = await MessageBoxManager.GetMessageBoxStandardWindow("", "Reset database?", ButtonEnum.YesNoCancel, Icon.Question).ShowDialog(_wnd);
+            if (res == ButtonResult.Yes)
                 new TagContext(true);
+            else if (res == ButtonResult.Cancel) return;
             var loader   = new DanbooruLoader();
             loader.DownloadAll();
         }
