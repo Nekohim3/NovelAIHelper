@@ -10,7 +10,7 @@
         <viewModels:TagEditorViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
         <Grid Grid.Row="0" Grid.ColumnDefinitions="*, Auto">
           <StackPanel Grid.Column="0" Margin="3" Orientation="Horizontal">
             <Button Content="Download from Danbooru" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding DownloadFromDanbooruCmd}"/>
@@ -20,6 +20,14 @@
               <Button Content="Reset database" Height="26" Margin="0,0,3,0" MinWidth="75" Command="{Binding ResetDatabaseCmd}"/>
             </StackPanel>
         </Grid>
-        <TextBox Grid.Row="1" Margin="3,0" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"/>
+        <Grid Grid.Row="2" ColumnDefinitions="3*,*">
+            <TreeView Items="{Binding DirsTree}">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding UI_Childs}">
+                        <TextBlock Text="{Binding Name}"/>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Grid>
     </Grid>
 </Window>

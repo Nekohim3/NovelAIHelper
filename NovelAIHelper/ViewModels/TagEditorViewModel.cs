@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
@@ -17,12 +18,20 @@ using ReactiveUI;
 
 namespace NovelAIHelper.ViewModels
 {
-    internal class TagEditorViewModel
+    internal class TagEditorViewModel : ViewModelBase
     {
         private Window _wnd;
 
         public ReactiveCommand<Unit, Unit> DownloadFromDanbooruCmd { get; }
         public ReactiveCommand<Unit, Unit> ResetDatabaseCmd        { get; }
+
+        private ObservableCollection<UI_Dir> _dirsTree;
+
+        public ObservableCollection<UI_Dir> DirsTree
+        {
+            get => _dirsTree;
+            set => this.RaiseAndSetIfChanged(ref _dirsTree, value);
+        }
 
         public TagEditorViewModel()
         {
@@ -35,6 +44,7 @@ namespace NovelAIHelper.ViewModels
             DownloadFromDanbooruCmd = ReactiveCommand.Create(OnDownloadFromDanbooru);
             ResetDatabaseCmd        = ReactiveCommand.Create(OnResetDatabase);
             LoadTreeCmd             = ReactiveCommand.Create(OnLoadTree);
+            OnLoadTree();
         }
 
         public ReactiveCommand<Unit, Unit> LoadTreeCmd { get; }
@@ -44,7 +54,7 @@ namespace NovelAIHelper.ViewModels
         {
             var service = new DirService();
 
-            var lst = service.GetTopDirs().ToList();
+            DirsTree = new ObservableCollection<UI_Dir>(service.GetTopDirs());
         }
 
         private async void OnResetDatabase()
@@ -59,22 +69,6 @@ namespace NovelAIHelper.ViewModels
                 new TagContext(true);
             var loader   = new DanbooruLoader();
             loader.DownloadAll();
-            //var dirsTree = loader.DownloadDirs();
-            //var saved    = loader.SaveDirs(dirsTree);
-            //if (saved)
-            //    await MessageBoxManager.GetMessageBoxStandardWindow("", "Success", ButtonEnum.Ok, Icon.Success).ShowDialog(_wnd);
-            //else
-            //    await MessageBoxManager.GetMessageBoxStandardWindow("", "Error while download or save", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
         }
-
-        //private void Load(UI_Dir dir)
-        //{
-        //    var q = dir.UI_Childs;
-        //    var w = dir.UI_Tags;
-        //    foreach (var x in q)
-        //    {
-        //        Load(x);
-        //    }
-        //}
     }
 }

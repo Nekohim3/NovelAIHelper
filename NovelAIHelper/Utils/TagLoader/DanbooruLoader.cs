@@ -32,10 +32,9 @@ namespace NovelAIHelper.Utils.TagDownloader
         public void DownloadAll()
         {
             var loader   = new DanbooruLoader();
-            var dirsTree = loader.DownloadDirs();
-            DirTree = dirsTree.ToList();
-            LoadTagsForDirTree(dirsTree);
-            var saved    = loader.SaveDirs(dirsTree);
+            DirTree = loader.DownloadDirs().ToList();
+            LoadTagsForDirTree();
+            var saved    = loader.SaveDirs(DirTree);
         }
 
         private HtmlNode GetWikiBody(string path)
@@ -107,9 +106,9 @@ namespace NovelAIHelper.Utils.TagDownloader
             }
         }
 
-        private void LoadTagsForDirTree(IList<UI_Dir> dirsTree)
+        private void LoadTagsForDirTree()
         {
-            foreach (var dir in dirsTree)//.Where(x => x.Name.ToLower() == "body"))
+            foreach (var dir in DirTree)//.Where(x => x.Name.ToLower() == "body"))
             {
                 LoadTagsForDirTree(dir);
             }
@@ -136,65 +135,113 @@ namespace NovelAIHelper.Utils.TagDownloader
                     excludeNode = GetExcludeNode(nodes);
                 }
 
-                var currentParent = dir;
-                var parentList    = new List<UI_Dir> { currentParent };
+                (UI_Dir dir, int level) currentParent = (dir, 0);
+                var parentList    = new List<(UI_Dir dir, int level)> { currentParent };
                 foreach (var node in nodes)
                 {
-                    if (node.Name.ToLower() == "h4")
+                    if (node.Name.ToLower().StartsWith("h"))
                     {
-                        if (parentList.Count > 1)
+                        var level = int.Parse(node.Name.Substring(1, 1));
+                        if (level > currentParent.level)
                         {
-                            parentList    = parentList.Take(1).ToList();
+                            var newDir = new UI_Dir(node.InnerText);
+                            currentParent.dir.ChildDirs.Add(newDir);
+                            parentList.Add((newDir, level));
                             currentParent = parentList.Last();
                         }
-
-                        var newDir = new UI_Dir(node.InnerText);
-                        currentParent.ChildDirs.Add(newDir);
-                        currentParent = newDir;
-                        parentList.Add(currentParent);
-                    }
-                    else if (node.Name.ToLower() == "h6" || node.Name.ToLower() == "h5")
-                    {
-                        if (parentList.Count > 2)
+                        else if (level == currentParent.level)
                         {
-                            parentList    = parentList.Take(2).ToList();
+                            parentList.Remove(currentParent);
+                            currentParent = parentList.Last();
+                            var newDir = new UI_Dir(node.InnerText);
+                            currentParent.dir.ChildDirs.Add(newDir);
+                            parentList.Add((newDir, level));
                             currentParent = parentList.Last();
                         }
-
-                        var newDir = new UI_Dir(node.InnerText);
-                        currentParent.ChildDirs.Add(newDir);
-                        currentParent = newDir;
-                        parentList.Add(currentParent);
+                        else
+                        {
+                            while (level < currentParent.level)
+                            {
+                                parentList.Remove(currentParent);
+                                currentParent = parentList.Last();
+                            }
+                            var newDir = new UI_Dir(node.InnerText);
+                            currentParent.dir.ChildDirs.Add(newDir);
+                            parentList.Add((newDir, level));
+                            currentParent = parentList.Last();
+                        }
                     }
                     else if (node.Name.ToLower() == "ul")
                     {
                         var lis = node.Descendants("li").Where(x => x.ChildNodes.Any(c => c.Name.ToLower() == "a")).ToList();
                         foreach (var x in lis)
                         {
-                            if (x.InnerText.ToLower().StartsWith("tag group:"))
+                            foreach (var c in x.ChildNodes.Where(c => c.Name.ToLower() == "a"))
                             {
-                                //var movedDir = FindDirByName(x.InnerText.Remove(0, "tag group:".Length));
-                                //if (movedDir != null)
-                                //{
-                                //    currentParent.dir.ChildDirs.Add(movedDir);
-                                //    if (movedDir.ParentDir != null)
-                                //        movedDir.ParentDir.ChildDirs.Remove(movedDir);
-                                //    movedDir.ParentDir = currentParent.dir;
-                                //}
-                                //else
-                                //{
-                                //    var newDir = new UI_Dir(x.InnerText.Remove(0, "tag group:".Length));
-                                //    LoadTagsForDirTree(newDir);
-                                //    currentParent.dir.ChildDirs.Add(newDir);
-                                //}
-                            }
-                            else
-                            {
-                                currentParent.Tags.Add(new Tag(x.InnerText));
+                                if (!x.InnerText.ToLower().StartsWith("tag group:"))
+                                {
+                                    currentParent.dir.Tags.Add(new Tag(x.InnerText, c.GetAttributeValue("href", null)));
+                                }
                             }
                         }
+
                     }
                     else throw new Exception();
+                    //if (node.Name.ToLower() == "h4")
+                    //{
+                    //    if (parentList.Count > 1)
+                    //    {
+                    //        parentList    = parentList.Take(1).ToList();
+                    //        currentParent = parentList.Last();
+                    //    }
+
+                    //    var newDir = new UI_Dir(node.InnerText);
+                    //    currentParent.ChildDirs.Add(newDir);
+                    //    currentParent = newDir;
+                    //    parentList.Add(currentParent);
+                    //}
+                    //else if (node.Name.ToLower() == "h6" || node.Name.ToLower() == "h5")
+                    //{
+                    //    if (parentList.Count > 2)
+                    //    {
+                    //        parentList    = parentList.Take(2).ToList();
+                    //        currentParent = parentList.Last();
+                    //    }
+
+                    //    var newDir = new UI_Dir(node.InnerText);
+                    //    currentParent.ChildDirs.Add(newDir);
+                    //    currentParent = newDir;
+                    //    parentList.Add(currentParent);
+                    //}
+                    //else if (node.Name.ToLower() == "ul")
+                    //{
+                    //    var lis = node.Descendants("li").Where(x => x.ChildNodes.Any(c => c.Name.ToLower() == "a")).ToList();
+                    //    foreach (var x in lis)
+                    //    {
+                    //        if (x.InnerText.ToLower().StartsWith("tag group:"))
+                    //        {
+                    //            //var movedDir = FindDirByName(x.InnerText.Remove(0, "tag group:".Length));
+                    //            //if (movedDir != null)
+                    //            //{
+                    //            //    currentParent.dir.ChildDirs.Add(movedDir);
+                    //            //    if (movedDir.ParentDir != null)
+                    //            //        movedDir.ParentDir.ChildDirs.Remove(movedDir);
+                    //            //    movedDir.ParentDir = currentParent.dir;
+                    //            //}
+                    //            //else
+                    //            //{
+                    //            //    var newDir = new UI_Dir(x.InnerText.Remove(0, "tag group:".Length));
+                    //            //    LoadTagsForDirTree(newDir);
+                    //            //    currentParent.dir.ChildDirs.Add(newDir);
+                    //            //}
+                    //        }
+                    //        else
+                    //        {
+                    //            currentParent.Tags.Add(new Tag(x.InnerText));
+                    //        }
+                    //    }
+                    //}
+                    //else throw new Exception();
                 }
 
                 foreach (UI_Dir child in dir.ChildDirs)
