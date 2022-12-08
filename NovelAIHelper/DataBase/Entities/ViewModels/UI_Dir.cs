@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using NovelAIHelper.DataBase.Entities.DataBase;
+using NovelAIHelper.Utils.Collections;
 using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
@@ -24,19 +25,19 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         }
 
 
-        private ObservableCollection<UI_Dir> _ui_Childs;
+        private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Childs;
 
-        public ObservableCollection<UI_Dir> UI_Childs
+        public ObservableCollectionWithSelectedItem<UI_Dir> UI_Childs
         {
-            get => _ui_Childs ??= new ObservableCollection<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
+            get => _ui_Childs ??= new ObservableCollectionWithSelectedItem<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
             set => this.RaiseAndSetIfChanged(ref _ui_Childs, value);
         }
 
-        private ObservableCollection<UI_Tag> _ui_Tags;
+        private ObservableCollectionWithSelectedItem<UI_Tag> _ui_Tags;
 
-        public ObservableCollection<UI_Tag> UI_Tags
+        public ObservableCollectionWithSelectedItem<UI_Tag> UI_Tags
         {
-            get => _ui_Tags ??= new ObservableCollection<UI_Tag>(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
+            get => _ui_Tags ??= new ObservableCollectionWithSelectedItem<UI_Tag>(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
             set => this.RaiseAndSetIfChanged(ref _ui_Tags, value);
         }
 
@@ -57,5 +58,18 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         {
 
         }
+
+        public void UiChildsLoad()
+        {
+            _ui_Childs = new ObservableCollectionWithSelectedItem<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
+        }
+
+        public void UiTagsLoad()
+        {
+            _ui_Tags = new ObservableCollectionWithSelectedItem<UI_Tag>(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
+        }
+
     }
+
+    
 }

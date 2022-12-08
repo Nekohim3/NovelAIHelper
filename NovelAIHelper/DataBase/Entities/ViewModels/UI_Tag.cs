@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using NovelAIHelper.DataBase.Entities.DataBase;
 using ReactiveUI;
+using NovelAIHelper.Utils.Collections;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
 {
@@ -24,11 +25,11 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isSelected, value);
         }
 
-        private ObservableCollection<UI_Dir> _ui_Dirs;
+        private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Dirs;
 
-        public ObservableCollection<UI_Dir> UI_Dirs
+        public ObservableCollectionWithSelectedItem<UI_Dir> UI_Dirs
         {
-            get => _ui_Dirs ??= new ObservableCollection<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
+            get => _ui_Dirs ??= new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
             set => this.RaiseAndSetIfChanged(ref _ui_Dirs, value);
         }
 
@@ -40,6 +41,11 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         public UI_Tag(string name, string? link = null) : base(name, link)
         {
 
+        }
+
+        public void UiDirsLoad()
+        {
+            _ui_Dirs = new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
         }
     }
 }

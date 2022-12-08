@@ -42,7 +42,7 @@ namespace NovelAIHelper.ViewModels
         {
             var f = new TagEditorView();
             f.DataContext = new TagEditorViewModel(f);
-            f.ShowDialog(_wnd);
+            f.Show(_wnd);
         }
     }
 }

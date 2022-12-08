@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using NovelAIHelper.DataBase;
 using NovelAIHelper.ViewModels;
 using NovelAIHelper.Views;
 
@@ -17,6 +18,7 @@ namespace NovelAIHelper
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                var _ = new TagContext();
                 desktop.MainWindow = new MainWindow();
                 var vm = new MainWindowViewModel(desktop.MainWindow);
                 desktop.MainWindow.DataContext = vm;

@@ -180,7 +180,7 @@ namespace NovelAIHelper.Utils.TagDownloader
                             {
                                 if (!x.InnerText.ToLower().StartsWith("tag group:"))
                                 {
-                                    currentParent.dir.Tags.Add(new Tag(x.InnerText, c.GetAttributeValue("href", null)));
+                                    currentParent.dir.Tags.Add(new Tag(c.InnerText, c.GetAttributeValue("href", null)));
                                 }
                             }
                         }
