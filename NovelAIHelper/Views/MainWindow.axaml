@@ -13,9 +13,9 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0" Margin="3">
-            <Button Content="Tags editor" Margin="3,0" Height="26" Command="{Binding TagEditorShowCmd}"/>
-            <Button Content="Settings" Margin="3,0" Height="26"/>
+        <StackPanel Classes="ToolBar" HorizontalAlignment="Right" Grid.Row="0">
+            <Button Content="Tags editor" Command="{Binding TagEditorShowCmd}"/>
+            <Button Content="Settings"/>
         </StackPanel>
     </Grid>
 

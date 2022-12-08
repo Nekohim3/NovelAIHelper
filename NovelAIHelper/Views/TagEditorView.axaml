@@ -7,56 +7,68 @@
         x:Class="NovelAIHelper.Views.TagEditorView" WindowStartupLocation="CenterScreen"
         Title="TagEditorView">
     <Design.DataContext>
-        <viewModels:TagEditorViewModel/>
+        <viewModels:TagEditorViewModel />
     </Design.DataContext>
-    <Window.Styles>
-        <Style Selector="Button">
-			<Setter Property="Height" Value="26"/>
-			<Setter Property="Margin" Value="1"/>
-            <Setter Property="MinWidth" Value="50"/>
-        </Style>
-    </Window.Styles>
-    <Grid RowDefinitions="Auto, Auto, *" Margin="1">
+    <Grid RowDefinitions="Auto, *" Margin="1">
         <Grid Grid.Row="0" Grid.ColumnDefinitions="*, Auto" IsVisible="True">
-          <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Content="Load tree" Command="{Binding LoadTreeCmd}"/>
-          </StackPanel>
-          <StackPanel Grid.Column="1" Orientation="Horizontal">
-              <Button Content="Download from Danbooru" Command="{Binding DownloadFromDanbooruCmd}"/>
-              <Button Content="Reset database" Command="{Binding ResetDatabaseCmd}"/>
+            <StackPanel Classes="ToolBar" Grid.Column="0" HorizontalAlignment="Left">
+                <Button Content="Load tree" Command="{Binding LoadTreeCmd}" />
+            </StackPanel>
+            <StackPanel Classes="ToolBar" Grid.Column="1">
+                <Button Content="Download from Danbooru" Command="{Binding DownloadFromDanbooruCmd}" />
+                <Button Content="Reset database" Command="{Binding ResetDatabaseCmd}" />
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="2*,*">
-            <Grid Grid.Column="0" RowDefinitions="Auto, *">
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-					<Button Content="Add root" Command="{Binding AddRootDirCmd}"/>
-					<Button Content="Add child" Command="{Binding AddChildDirCmd}"/>
-                    <Button Content="Edit" Command="{Binding EditDirCmd}"/>
-                    <Button Content="Remove" Command="{Binding RemoveDirCmd}"/>
-                    <Button Content="Move" Command="{Binding MoveDirCmd}"/>
+        <Grid Grid.Row="1" ColumnDefinitions="3*,2*">
+            <Grid Grid.Column="0" RowDefinitions="Auto, *, Auto">
+                <StackPanel Classes="ToolBar" Grid.Row="0">
+                    <Button Content="Add root" Command="{Binding AddRootDirCmd}" />
+                    <Button Content="Add child" Command="{Binding AddChildDirCmd}" />
+                    <Button Content="Edit" Command="{Binding EditDirCmd}" />
+                    <Button Content="Remove" Command="{Binding RemoveDirCmd}" />
+                    <Button Content="Move" Command="{Binding MoveDirCmd}" />
                 </StackPanel>
-                <TreeView Grid.Row="1" Margin="1" Items="{Binding DirsTree}" SelectedItem="{Binding DirsTree.SelectedItem}" SelectionMode="Single">
-					<TreeView.ItemTemplate>
-						<TreeDataTemplate ItemsSource="{Binding UI_Childs}">
-							<TextBlock Text="{Binding Name}"/>
-						</TreeDataTemplate>
-					</TreeView.ItemTemplate>
-				</TreeView>
+                <TreeView Grid.Row="1" Margin="1" Items="{Binding DirsTree}"
+                          SelectedItem="{Binding DirsTree.SelectedItem}" SelectionMode="Single">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding UI_Childs}">
+                            <TextBlock Text="{Binding Name}" />
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding DirEditVisible}">
+                    <TextBlock Grid.Column="0" Text="Name:"/>
+                    <TextBox Grid.Column="1" Text="{Binding EditedDir.Name}"/>
+                    <Button Grid.Column="2" Content="Save" Command="{Binding SaveDirCmd}"/>
+                    <Button Grid.Column="3" Content="Cancel" Command="{Binding CancelDirCmd}"/>
+                </Grid>
             </Grid>
-            <Grid Grid.Column="1" RowDefinitions="Auto, *">
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Content="Add" Command="{Binding AddTagCmd}"/>
-                    <Button Content="Edit" Command="{Binding EditTagCmd}"/>
-                    <Button Content="Remove" Command="{Binding RemoveTagCmd}"/>
-                    <Button Content="Move" Command="{Binding MoveTagCmd}"/>
-                </StackPanel>
-				<ListBox Grid.Row="1" Margin="1" Items="{Binding DirsTree.SelectedItem.UI_Tags}" SelectedItem="{Binding DirsTree.SelectedItem.UI_Tags.SelectedItem}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <StackPanel Classes="ToolBar" Grid.Column="0">
+                        <Button Content="Add" Command="{Binding AddTagCmd}" />
+                        <Button Content="Edit" Command="{Binding EditTagCmd}" />
+                        <Button Content="Remove" Command="{Binding RemoveTagCmd}" />
+                        <Button Content="Move" Command="{Binding MoveTagCmd}" />
+                    </StackPanel>
+                    <StackPanel Classes="ToolBar" Grid.Column="1" HorizontalAlignment="Right">
+                        <ToggleButton Classes="NotTreeView" Content="Show inner tags" IsChecked="{Binding ShowInnerTags}" />
+                    </StackPanel>
+                </Grid>
+                <ListBox Grid.Row="1" Margin="1" Items="{Binding DirsTree.SelectedItem.UI_Tags}"
+                         SelectedItem="{Binding DirsTree.SelectedItem.UI_Tags.SelectedItem}" SelectionChanged="ListBoxTags_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding TagEditVisible}">
+                    <TextBlock Grid.Column="0" Text="Name:"/>
+                    <TextBox Grid.Column="1" Text="{Binding EditedTag.Name}"/>
+                    <Button Grid.Column="2" Content="Save" Command="{Binding SaveTagCmd}"/>
+                    <Button Grid.Column="3" Content="Cancel" Command="{Binding CancelTagCmd}"/>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

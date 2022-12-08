@@ -14,59 +14,35 @@ namespace NovelAIHelper.DataBase.Services
     [SuppressMessage("ReSharper", "ReplaceWithSingleCallToCount")]
     internal class DirService
     {
-        private TagContext _ctx;
-
         //public List<UI_Dir> Tree { get; set; } = new List<UI_Dir>();
 
         public DirService()
         {
-            _ctx = new TagContext();
+            if(g.Ctx != null)
+                g.Ctx.Dispose();
+            g.Ctx = new TagContext();
         }
 
         public DirService(TagContext ctx)
         {
-            _ctx = ctx;
+            if (g.Ctx != null)
+                g.Ctx.Dispose();
+            g.Ctx = ctx;
         }
 
         #region Get
-
-        //public void LoadTree()
-        //{
-        //    var allDirs = GetAllDirs().ToList();
-        //    foreach (var dir in allDirs)
-        //    {
-        //        if (dir.ParentId.HasValue)
-        //        {
-        //            dir.ParentDir = allDirs.FirstOrDefault(x => x.Id == dir.ParentId.Value);
-        //        }
-
-        //        if (dir.Tags.Count > 0)
-        //        {
-        //            foreach (var tag in dir.Tags)
-        //            {
-        //                var ids = tag.Dirs.Select(x => x.Id);
-        //                tag.Dirs = allDirs.Where(x => ids.Contains(x.Id)).OfType<Dir>().ToList();
-        //            }
-        //        }
-        //        //if (dir.ParentDirs.Count != 0)
-        //        //{
-        //        //    var ids     = dir.ParentDirs.Select(x => x.Id);
-        //        //    var parents = allDirs.Where(x => ids.Contains(x.Id)).ToList();
-        //        //}
-        //    }
-        //}
-
+        
         public IEnumerable<UI_Dir> GetAllDirs()
         {
-            return _ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable();
+            return g.Ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable();
         }
 
         public IEnumerable<UI_Dir> GetTopDirs()
         {
-            var q = _ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable().Where(x => !x.ParentId.HasValue);
-            //return _ctx.Dirs
-            return q;
+            return g.Ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable().Where(x => !x.ParentId.HasValue);
         }
+
+        
 
         //public IEnumerable<UI_Dir> GetSubDirs(UI_Dir dir, bool includeSelf = true)
         //{
@@ -94,29 +70,42 @@ namespace NovelAIHelper.DataBase.Services
         {
             if (dir.Id == 0)
                 return Add(dir);
-            _ctx.Dirs.Attach(dir);
-            return _ctx.SaveChanges() > 0;
+            g.Ctx.Dirs.Attach(dir);
+            return g.Ctx.SaveChanges() > 0;
         }
 
         public bool SaveRange(IList<UI_Dir> dirs)
         {
             var newDirs = dirs.Where(x => x.Id == 0);
             var oldDirs = dirs.Where(x => x.Id != 0);
-            _ctx.Dirs.AddRange(newDirs);
-            _ctx.Dirs.AttachRange(oldDirs);
-            return _ctx.SaveChanges() > 0;
+            g.Ctx.Dirs.AddRange(newDirs);
+            g.Ctx.Dirs.AttachRange(oldDirs);
+            return g.Ctx.SaveChanges() > 0;
         }
 
         public bool Add(UI_Dir dir)
         {
-            _ctx.Dirs.Add(dir);
-            return _ctx.SaveChanges() > 0;
+            g.Ctx.Dirs.Add(dir);
+            return g.Ctx.SaveChanges() > 0;
         }
 
         public bool AddRange(IList<UI_Dir> dirs)
         {
-            _ctx.Dirs.AttachRange(dirs);
-            return _ctx.SaveChanges() > 0;
+            g.Ctx.Dirs.AttachRange(dirs);
+            return g.Ctx.SaveChanges() > 0;
+        }
+
+        public bool Remove(UI_Dir dir)
+        {
+            var d = g.Ctx.Dirs.Entry(dir);
+            d.State = EntityState.Deleted;
+            return g.Ctx.SaveChanges() > 0;
+        }
+
+        public bool RemoveRange(IList<UI_Dir> dirs)
+        {
+            g.Ctx.Dirs.RemoveRange(dirs);
+            return g.Ctx.SaveChanges() > 0;
         }
 
         #endregion

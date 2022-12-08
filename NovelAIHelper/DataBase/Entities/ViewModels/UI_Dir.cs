@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AvaloniaEdit.Utils;
 using NovelAIHelper.DataBase.Entities.DataBase;
+using NovelAIHelper.DataBase.Services;
 using NovelAIHelper.Utils.Collections;
 using ReactiveUI;
 
@@ -41,9 +43,11 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _ui_Tags, value);
         }
 
-        private UI_Dir _ui_Parent;
+        
 
-        public UI_Dir UI_Parent
+        private UI_Dir? _ui_Parent;
+
+        public UI_Dir? UI_Parent
         {
             get => _ui_Parent ??= Mapper.Map<UI_Dir>(ParentDir);
             set => this.RaiseAndSetIfChanged(ref _ui_Parent, value);
@@ -61,14 +65,52 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         public void UiChildsLoad()
         {
-            _ui_Childs = new ObservableCollectionWithSelectedItem<UI_Dir>(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
+            UI_Childs.Clear();
+            UI_Childs.AddRange(Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(ChildDirs));
         }
 
-        public void UiTagsLoad()
+        public void UiTagsLoad(bool showInner = false)
         {
-            _ui_Tags = new ObservableCollectionWithSelectedItem<UI_Tag>(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
+            UI_Tags.Clear();
+            if (!showInner)
+                UI_Tags.AddRange(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(Tags));
+            else
+            {
+                var list = new List<Tag>();
+                list.AddRange(Tags);
+                foreach (var x in ChildDirs)
+                    TagsLoadRec(x, list);
+                UI_Tags.AddRange(UI_Tag.Mapper.Map<ICollection<Tag>, ICollection<UI_Tag>>(list));
+            }
         }
 
+        private void TagsLoadRec(Dir dir, List<Tag> tags)
+        {
+            tags.AddRange(dir.Tags);
+            foreach (var x in dir.ChildDirs)
+                TagsLoadRec(x, tags);
+        }
+
+        public bool Save()
+        {
+            if (Id == 0) return Add();
+            var service = new DirService();
+            return service.Save(this);
+        }
+
+        public bool Add()
+        {
+            if (Id != 0) return Save();
+            var service = new DirService();
+            return service.Add(this);
+        }
+
+        public bool Remove()
+        {
+            if (Id == 0) return false;
+            var service = new DirService();
+            return service.Remove(this);
+        }
     }
 
     
