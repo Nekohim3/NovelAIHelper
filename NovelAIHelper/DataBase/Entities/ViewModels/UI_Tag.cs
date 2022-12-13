@@ -9,10 +9,11 @@ using System.Xml.Linq;
 using NovelAIHelper.DataBase.Entities.DataBase;
 using ReactiveUI;
 using NovelAIHelper.Utils.Collections;
+using NovelAIHelper.DataBase.Services;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
 {
-    internal class UI_Tag : Tag, ISelected
+    public class UI_Tag : Tag, ISelected
     {
         public static MapperConfiguration Map    = new(x => x.CreateMap<Tag, UI_Tag>());
         public static Mapper              Mapper = new(Map);
@@ -25,11 +26,14 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isSelected, value);
         }
 
-        private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Dirs;
+
+        public string SearchedDisplay => GetSearchedDisplay();
+
+        private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Dirs = new();
 
         public ObservableCollectionWithSelectedItem<UI_Dir> UI_Dirs
         {
-            get => _ui_Dirs ??= new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
+            get => _ui_Dirs;// ??= new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
             set => this.RaiseAndSetIfChanged(ref _ui_Dirs, value);
         }
 
@@ -43,9 +47,33 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         }
 
-        public void UiDirsLoad()
+        public bool Save()
         {
-            _ui_Dirs = new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
+            if (Id == 0) return Add();
+            var service = new TagService();
+            return service.Save(this);
+        }
+
+        public bool Add()
+        {
+            if (Id != 0) return Save();
+            var service = new TagService();
+            return service.Add(this);
+        }
+
+        public bool Remove()
+        {
+            if (Id == 0) return false;
+            var service = new TagService();
+            return service.Remove(this);
+        }
+
+        private string GetSearchedDisplay()
+        {
+            var str = $"{Name}\n  ";
+            str = UI_Dirs.Aggregate(str, (current, x) => current + $"{x.SearchedDisplay}\n");
+
+            return str.TrimEnd('\n');
         }
     }
 }

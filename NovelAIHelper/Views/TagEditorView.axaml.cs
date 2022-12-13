@@ -18,5 +18,11 @@ namespace NovelAIHelper.Views
             var vm = DataContext as TagEditorViewModel;
             vm.TagsOnSelectionChanged((e.AddedItems as object[]).OfType<UI_Tag>().FirstOrDefault(), (e.RemovedItems as object[]).OfType<UI_Tag>().FirstOrDefault());
         }
+
+        //private void TreeView_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        //{
+        //    var vm = DataContext as TagEditorViewModel;
+        //    vm.DirsOnSelectionChanged((e.AddedItems as object[]).OfType<UI_Dir>().FirstOrDefault(), (e.RemovedItems as object[]).OfType<UI_Dir>().FirstOrDefault());
+        //}
     }
 }

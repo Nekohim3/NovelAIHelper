@@ -3,20 +3,92 @@
         xmlns:vm="using:NovelAIHelper.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
         x:Class="NovelAIHelper.Views.MainWindow" WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
         Title="NovelAIHelper">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
-        <StackPanel Classes="ToolBar" HorizontalAlignment="Right" Grid.Row="0">
-            <Button Content="Tags editor" Command="{Binding TagEditorShowCmd}"/>
-            <Button Content="Settings"/>
-        </StackPanel>
-    </Grid>
+    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *">
+		<Grid Grid.Row="0" Grid.Column="0">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
+                <ToggleButton Classes="NotTreeView" Grid.Column="0" Content="ShowTree" />
+				<TextBox Grid.Column="1" Text="{Binding TagTree.SearchString}" Margin="0"/>
+				<TextBox Grid.Column="1" Text="{Binding TagTree.SearchString}" IsVisible="False"/>
+                <TextBox Grid.Column="2" Text="{Binding TagTree.SearchString}" IsVisible="False" Width="200"/>
+            </Grid>
+		</Grid>
+		<Grid Grid.Row="0" Grid.Column="1" Height="24">
+            <Grid ColumnDefinitions="Auto, Auto" HorizontalAlignment="Right">
+                <Button Grid.Column="0" Content="Tags editor" Command="{Binding TagEditorShowCmd}" />
+                <Button Grid.Column="1" Content="Settings" />
+            </Grid>
+		</Grid>
+		<Grid Grid.Row="1" Grid.Column="1" Background="#33000000">
 
+        </Grid>
+        <Grid Grid.Row="1" Column="0">
+            <ListBox Items="{Binding TagTree.SearchedTags}" Width="200" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.AllowAutoHide="True">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="#01000000" ToolTip.Tip="{Binding SearchedDisplay}">
+                            <TextBlock Text="{Binding Name}">
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!--<Grid ColumnDefinitions="Auto, Auto">
+                <TreeView Grid.Column="0" Margin="1" Items="{Binding TagTree.RootDirs}" Width="400"
+                          SelectedItem="{Binding TagTree.RootDirs.SelectedItem}" SelectionMode="Single">
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        </Style>
+                        <Style Selector="Grid.Selected">
+                            <Setter Property="Background" Value="#77339933"/>
+                        </Style>
+                    </TreeView.Styles>
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding UI_Childs}">
+                            <Grid Classes.Selected="{Binding IsSelected}">
+                                <TextBlock Text="{Binding Name}"/>
+                            </Grid>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <ListBox Grid.Column="1" Margin="1" Items="{Binding TagTree.Tags}" Width="200"
+                         SelectedItem="{Binding TagTree.Tags.SelectedItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+			</Grid>-->
+        </Grid>
+        <!--<Grid RowDefinitions="Auto, *">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto">
+                <ToggleButton Classes="NotTreeView" Grid.Column="0" Content="ShowTree" />
+                <TextBox Grid.Column="1" Text="{Binding TagTree.SearchString}"/>
+                <Button Grid.Column="2" Content="Tags editor" Command="{Binding TagEditorShowCmd}" />
+                <Button Grid.Column="3" Content="Settings" />
+            </Grid>
+            <Grid Grid.Row="1" Margin="10" Background="#55ff0000">
+                <ListBox Items="{Binding TagTree.SearchedTags}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="#01000000"  ToolTip.Tip="{Binding SearchedDisplay}">
+								<TextBlock Text="{Binding Name}">
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+		</Grid>-->
+    </Grid>
 </Window>

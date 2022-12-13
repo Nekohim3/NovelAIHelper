@@ -39,8 +39,14 @@ namespace NovelAIHelper.Utils.Collections
             set
             {
                 _filter = value;
-                OnPropertyChanged();
-                _filterTimer.Change(100, Timeout.Infinite);
+                OnPropertyChanged(); 
+                if (UseFilter)
+                {
+                    if (UseDeffer)
+                        _filterTimer.Change(100, Timeout.Infinite);
+                    else
+                        SetRange(_filter != null ? _sourceCollection.Where(_filter) : _sourceCollection, false);
+                }
             }
         }
 
@@ -72,6 +78,9 @@ namespace NovelAIHelper.Utils.Collections
                 return IndexOf(SelectedItem);
             }
         }
+
+        public bool UseDeffer = false;
+        public bool UseFilter = false;
 
         #endregion
 
@@ -214,7 +223,13 @@ namespace NovelAIHelper.Utils.Collections
                     break;
             }
 
-            _filterTimer.Change(100, Timeout.Infinite);
+            if (UseFilter)
+            {
+                if(UseDeffer)
+                    _filterTimer.Change(100, Timeout.Infinite);
+                else
+                    SetRange(_filter != null ? _sourceCollection.Where(_filter) : _sourceCollection, false);
+            }
         }
 
         #endregion

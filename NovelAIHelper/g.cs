@@ -10,6 +10,6 @@ namespace NovelAIHelper
 {
     internal static class g
     {
-        public static TagContext? Ctx { get; set; }
+        public static TagContext Ctx { get; set; }
     }
 }

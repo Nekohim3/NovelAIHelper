@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:NovelAIHelper.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
         x:Class="NovelAIHelper.Views.TagEditorView" WindowStartupLocation="CenterScreen"
         Title="TagEditorView">
     <Design.DataContext>
@@ -28,11 +28,21 @@
                     <Button Content="Remove" Command="{Binding RemoveDirCmd}" />
                     <Button Content="Move" Command="{Binding MoveDirCmd}" />
                 </StackPanel>
-                <TreeView Grid.Row="1" Margin="1" Items="{Binding DirsTree}"
-                          SelectedItem="{Binding DirsTree.SelectedItem}" SelectionMode="Single">
+                <TreeView Grid.Row="1" Margin="1" Items="{Binding TagTree.RootDirs}"
+                          SelectedItem="{Binding TagTree.RootDirs.SelectedItem}" SelectionMode="Single">
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        </Style>
+                        <Style Selector="Grid.Selected">
+                            <Setter Property="Background" Value="#77339933"/>
+                        </Style>
+                    </TreeView.Styles>
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate ItemsSource="{Binding UI_Childs}">
-                            <TextBlock Text="{Binding Name}" />
+                            <Grid Classes.Selected="{Binding IsSelected}">
+								<TextBlock Text="{Binding Name}"/>
+                            </Grid>
                         </TreeDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
@@ -48,15 +58,16 @@
                     <StackPanel Classes="ToolBar" Grid.Column="0">
                         <Button Content="Add" Command="{Binding AddTagCmd}" />
                         <Button Content="Edit" Command="{Binding EditTagCmd}" />
-                        <Button Content="Remove" Command="{Binding RemoveTagCmd}" />
+						<Button Content="Remove" Command="{Binding RemoveTagCmd}" />
+						<Button Content="Assign new dir" Command="{Binding }" />
                         <Button Content="Move" Command="{Binding MoveTagCmd}" />
                     </StackPanel>
                     <StackPanel Classes="ToolBar" Grid.Column="1" HorizontalAlignment="Right">
                         <ToggleButton Classes="NotTreeView" Content="Show inner tags" IsChecked="{Binding ShowInnerTags}" />
                     </StackPanel>
                 </Grid>
-                <ListBox Grid.Row="1" Margin="1" Items="{Binding DirsTree.SelectedItem.UI_Tags}"
-                         SelectedItem="{Binding DirsTree.SelectedItem.UI_Tags.SelectedItem}" SelectionChanged="ListBoxTags_OnSelectionChanged">
+                <ListBox Grid.Row="1" Margin="1" Items="{Binding TagTree.Tags}"
+                         SelectedItem="{Binding TagTree.Tags.SelectedItem}" SelectionChanged="ListBoxTags_OnSelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Name}" />
@@ -65,7 +76,7 @@
                 </ListBox>
                 <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding TagEditVisible}">
                     <TextBlock Grid.Column="0" Text="Name:"/>
-                    <TextBox Grid.Column="1" Text="{Binding EditedTag.Name}"/>
+                    <TextBox Grid.Column="1" Text="{Binding EditedTag.Name, Mode=TwoWay}"/>
                     <Button Grid.Column="2" Content="Save" Command="{Binding SaveTagCmd}"/>
                     <Button Grid.Column="3" Content="Cancel" Command="{Binding CancelTagCmd}"/>
                 </Grid>

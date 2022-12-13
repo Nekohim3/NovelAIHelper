@@ -187,61 +187,6 @@ namespace NovelAIHelper.Utils.TagDownloader
 
                     }
                     else throw new Exception();
-                    //if (node.Name.ToLower() == "h4")
-                    //{
-                    //    if (parentList.Count > 1)
-                    //    {
-                    //        parentList    = parentList.Take(1).ToList();
-                    //        currentParent = parentList.Last();
-                    //    }
-
-                    //    var newDir = new UI_Dir(node.InnerText);
-                    //    currentParent.ChildDirs.Add(newDir);
-                    //    currentParent = newDir;
-                    //    parentList.Add(currentParent);
-                    //}
-                    //else if (node.Name.ToLower() == "h6" || node.Name.ToLower() == "h5")
-                    //{
-                    //    if (parentList.Count > 2)
-                    //    {
-                    //        parentList    = parentList.Take(2).ToList();
-                    //        currentParent = parentList.Last();
-                    //    }
-
-                    //    var newDir = new UI_Dir(node.InnerText);
-                    //    currentParent.ChildDirs.Add(newDir);
-                    //    currentParent = newDir;
-                    //    parentList.Add(currentParent);
-                    //}
-                    //else if (node.Name.ToLower() == "ul")
-                    //{
-                    //    var lis = node.Descendants("li").Where(x => x.ChildNodes.Any(c => c.Name.ToLower() == "a")).ToList();
-                    //    foreach (var x in lis)
-                    //    {
-                    //        if (x.InnerText.ToLower().StartsWith("tag group:"))
-                    //        {
-                    //            //var movedDir = FindDirByName(x.InnerText.Remove(0, "tag group:".Length));
-                    //            //if (movedDir != null)
-                    //            //{
-                    //            //    currentParent.dir.ChildDirs.Add(movedDir);
-                    //            //    if (movedDir.ParentDir != null)
-                    //            //        movedDir.ParentDir.ChildDirs.Remove(movedDir);
-                    //            //    movedDir.ParentDir = currentParent.dir;
-                    //            //}
-                    //            //else
-                    //            //{
-                    //            //    var newDir = new UI_Dir(x.InnerText.Remove(0, "tag group:".Length));
-                    //            //    LoadTagsForDirTree(newDir);
-                    //            //    currentParent.dir.ChildDirs.Add(newDir);
-                    //            //}
-                    //        }
-                    //        else
-                    //        {
-                    //            currentParent.Tags.Add(new Tag(x.InnerText));
-                    //        }
-                    //    }
-                    //}
-                    //else throw new Exception();
                 }
 
                 foreach (UI_Dir child in dir.ChildDirs)

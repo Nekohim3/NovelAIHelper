@@ -17,19 +17,17 @@ namespace NovelAIHelper.ViewModels
         private Window                      _wnd;
         public  ReactiveCommand<Unit, Unit> TagEditorShowCmd { get; }
 
+        private TagTree _tagTree = new();
+
+        public TagTree TagTree
+        {
+            get => _tagTree;
+            set => this.RaiseAndSetIfChanged(ref _tagTree, value);
+        }
+
         public MainWindowViewModel()
         {
-            //var ctx = new TagContext();
-            //var dir = new UI_Dir("testDir", null, null);
-            //dir.ChildDirs.Add(new UI_Dir("testDir1", null, null));
-            //var tag = new UI_Tag("testTag", null);
-            //tag.TagDirs.Add(new TagDir(){Dir = dir, Tag = tag});
-            //var tag1 = new UI_Tag("testTag1", null);
-            //tag1.TagDirs.Add(new TagDir() { Dir = dir.ChildDirs.First(), Tag = tag1 });
-            //ctx.Tags.Add(tag1);
-            //ctx.Dirs.Add(dir);
-            //ctx.Tags.Add(tag);
-            //ctx.SaveChanges();
+
         }
 
         public MainWindowViewModel(Window wnd)

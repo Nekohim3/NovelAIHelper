@@ -5,18 +5,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NovelAIHelper.ViewModels;
+using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.DataBase
 {
-    internal class Dir : ViewModelBase
+    public class Dir : ViewModelBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public int?    ParentId { get; set; }
-        public string  Name     { get; set; } = string.Empty;
-        public string? Link     { get; set; }
 
+        private string _name;
+
+        public string Name
+        {
+            get => _name;
+            set => this.RaiseAndSetIfChanged(ref _name, value);
+        }
+
+        private string? _link;
+
+        public string? Link
+        {
+            get => _link;
+            set => this.RaiseAndSetIfChanged(ref _link, value);
+        }
 
         [ForeignKey("ParentId")] public virtual Dir? ParentDir { get; set; }
         

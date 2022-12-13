@@ -8,14 +8,13 @@ using AutoMapper.QueryableExtensions;
 using NovelAIHelper.DataBase.Entities.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using NovelAIHelper.DataBase.Entities.DataBase;
+using HarfBuzzSharp;
 
 namespace NovelAIHelper.DataBase.Services
 {
     [SuppressMessage("ReSharper", "ReplaceWithSingleCallToCount")]
     internal class DirService
     {
-        //public List<UI_Dir> Tree { get; set; } = new List<UI_Dir>();
-
         public DirService()
         {
             if(g.Ctx != null)
@@ -34,43 +33,19 @@ namespace NovelAIHelper.DataBase.Services
         
         public IEnumerable<UI_Dir> GetAllDirs()
         {
-            return g.Ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable();
+            return g.Ctx.Dirs.ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable().OrderBy(x => x.Name);
         }
-
-        public IEnumerable<UI_Dir> GetTopDirs()
-        {
-            return g.Ctx.Dirs.Include(x => x.Tags).ThenInclude(x => x.Dirs).Include(x => x.ChildDirs).ProjectTo<UI_Dir>(UI_Dir.Map).AsEnumerable().Where(x => !x.ParentId.HasValue);
-        }
-
-        
-
-        //public IEnumerable<UI_Dir> GetSubDirs(UI_Dir dir, bool includeSelf = true)
-        //{
-        //    var dirs    = GetAllDirs().ToList();
-        //    var newList = new List<UI_Dir>();
-        //    if (includeSelf)
-        //        newList.Add(dir);
-        //    GetSubDirs(dir, dirs, newList);
-        //    return newList;
-        //}
-
-        //private void GetSubDirs(UI_Dir dir, List<UI_Dir> dbList, List<UI_Dir> newList)
-        //{
-        //    var subs = dbList.Where(x => x.ParentId == dir.Id).ToList();
-        //    newList.AddRange(subs);
-        //    foreach (var x in subs)
-        //        GetSubDirs(x, dbList, newList);
-        //}
 
         #endregion
 
-        #region Add/Save
+        #region Add/Save/Remove
 
         public bool Save(UI_Dir dir)
         {
             if (dir.Id == 0)
                 return Add(dir);
-            g.Ctx.Dirs.Attach(dir);
+            var d = g.Ctx.Dirs.Where(x => x.Id == dir.Id).FirstOrDefault();
+            d.Name = dir.Name;
             return g.Ctx.SaveChanges() > 0;
         }
 
@@ -89,7 +64,7 @@ namespace NovelAIHelper.DataBase.Services
             return g.Ctx.SaveChanges() > 0;
         }
 
-        public bool AddRange(IList<UI_Dir> dirs)
+        public bool AddRange(IEnumerable<UI_Dir> dirs)
         {
             g.Ctx.Dirs.AttachRange(dirs);
             return g.Ctx.SaveChanges() > 0;
@@ -102,9 +77,10 @@ namespace NovelAIHelper.DataBase.Services
             return g.Ctx.SaveChanges() > 0;
         }
 
-        public bool RemoveRange(IList<UI_Dir> dirs)
+        public bool RemoveRange(IEnumerable<UI_Dir> dirs)
         {
-            g.Ctx.Dirs.RemoveRange(dirs);
+            foreach (var x in dirs)
+                g.Ctx.Dirs.Entry(x).State = EntityState.Deleted;
             return g.Ctx.SaveChanges() > 0;
         }
 
