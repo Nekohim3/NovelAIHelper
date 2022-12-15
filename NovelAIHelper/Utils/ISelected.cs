@@ -16,4 +16,9 @@ namespace NovelAIHelper
     {
         public bool IsExpanded { get; set; }
     }
+
+    public interface IDraggable
+    {
+        public bool IsDrag { get; set; }
+    }
 }

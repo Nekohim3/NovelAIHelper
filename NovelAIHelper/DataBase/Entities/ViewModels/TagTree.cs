@@ -88,13 +88,12 @@ public class TagTree : ViewModelBase
     private void AssignTagsToDirs(List<UI_Dir> dirs, List<UI_Tag> tags)
     {
         foreach (var tag in tags)
-        foreach (var id in tag.Dirs.Select(x => x.Id))
         {
-            var dir = dirs.FirstOrDefault(x => x.Id == id);
+            var dir = dirs.FirstOrDefault(x => x.Id == tag.DirId);
             if (dir != null)
             {
+                tag.UI_Dir = dir;
                 dir.UI_Tags.Add(tag);
-                tag.UI_Dirs.Add(dir);
             }
         }
     }
@@ -119,4 +118,6 @@ public class TagTree : ViewModelBase
         if(!string.IsNullOrEmpty(name.Trim(' ')))
             SearchedTags.AddRange(_tagList.Where(x => x.Name.ToLower().Contains(name.Trim(' ').ToLower())));
     }
+
+    public List<UI_Tag> GetRange(int startIndex, int length) => _tagList.Skip(startIndex).Take(length).ToList();
 }

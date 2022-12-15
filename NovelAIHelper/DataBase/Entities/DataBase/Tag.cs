@@ -33,17 +33,35 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
             set => this.RaiseAndSetIfChanged(ref _link, value);
         }
 
-        public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
+        private int _dirId;
+
+        public int DirId
+        {
+            get => _dirId;
+            set => this.RaiseAndSetIfChanged(ref _dirId, value);
+        }
+
+        [ForeignKey("DirId")]
+        public virtual Dir Dir { get; set; }
+
+        //public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
 
         public Tag()
         {
-            
+
+        }
+
+        public Tag(string name, int dirId, string? link = null)
+        {
+            Name  = name;
+            DirId = dirId;
+            Link  = link;
         }
 
         public Tag(string name, string? link = null)
         {
-            Name = name;
-            Link = link;
+            Name  = name;
+            Link  = link;
         }
     }
 }

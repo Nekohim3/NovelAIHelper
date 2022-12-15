@@ -30,7 +30,7 @@ namespace NovelAIHelper.DataBase.Services
 
         public IEnumerable<UI_Tag> GetAllTags()
         {
-            return g.Ctx.Tags.Include(x => x.Dirs).ProjectTo<UI_Tag>(UI_Tag.Map).AsEnumerable().OrderBy(x => x.Name);
+            return g.Ctx.Tags.Include(x => x.Dir).ProjectTo<UI_Tag>(UI_Tag.Map).AsEnumerable().OrderBy(x => x.Name);
         }
 
         #endregion
