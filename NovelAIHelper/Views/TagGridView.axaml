@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:NovelAIHelper.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NovelAIHelper.Views.TagGridView">
+
+    <Design.DataContext>
+        <viewModels:TagGridViewModel />
+    </Design.DataContext>
+
+    <Border BorderBrush="#ff777777" BorderThickness="0,1,0,0">
+    <Grid>
+        <ItemsControl Items="{Binding TagGrid}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#ff777777" BorderThickness="0,0,0,1" Margin="0">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="5,0" FontWeight="Bold"/>
+                            <ItemsControl Grid.Column="1" Items="{Binding TagList}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+                                        <Border BorderBrush="Green" BorderThickness="1" Margin="1,2,0,2">
+											<Grid Height="40" RowDefinitions="20,20" ColumnDefinitions="20,*,20">
+                                                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="{Binding Name}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0"/>
+												<Button Grid.Row="1" Grid.Column="0" Content="+" Command="{Binding AddStrCmd}" Padding="0" Margin="0" Width="20" Height="20" MinWidth="20" Background="#00000000" BorderThickness="1" BorderBrush="#00000000"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Strength}" Padding="0" Margin="0" TextAlignment="Center" MinWidth="20"/>
+												<Button Grid.Row="1" Grid.Column="2" Content="-" Command="{Binding SubStrCmd}" Padding="0" Margin="0" Width="20" Height="20" MinWidth="20" Background="#00000000" BorderThickness="1" BorderBrush="#00000000"/>
+                                            </Grid>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+							<Grid Grid.Column="1">
+
+							</Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+    </Border>
+</UserControl>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -34,6 +35,21 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isDrag, value);
         }
 
+        private int _strength;
+
+        public int Strength
+        {
+            get => _strength;
+            set => this.RaiseAndSetIfChanged(ref _strength, value);
+        }
+
+
+        public ReactiveCommand<Unit, Unit> AddStrCmd { get; }
+        public ReactiveCommand<Unit, Unit> SubStrCmd      { get; }
+
+
+
+
         public string SearchedDisplay => GetSearchedDisplay();
 
         //private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Dirs = new();
@@ -54,17 +70,20 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         public UI_Tag()
         {
-
+            AddStrCmd = ReactiveCommand.Create(OnAddStr);
+            SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
 
         public UI_Tag(string name, int dirId, string? link = null) : base(name, dirId, link)
         {
-
+            AddStrCmd = ReactiveCommand.Create(OnAddStr);
+            SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
 
         public UI_Tag(string name, string? link = null) : base(name, link)
         {
-
+            AddStrCmd = ReactiveCommand.Create(OnAddStr);
+            SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
 
         public bool Save()
@@ -93,6 +112,18 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             var str = $"{Name}\n  {UI_Dir.SearchedDisplay}";
 
             return str.TrimEnd('\n');
+        }
+
+        private void OnAddStr()
+        {
+            if(Strength < 5)
+                Strength++;
+        }
+
+        private void OnSubStr()
+        {
+            if(Strength > -5)
+                Strength--;
         }
     }
 }

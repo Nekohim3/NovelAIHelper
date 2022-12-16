@@ -3,6 +3,7 @@
         xmlns:vm="using:NovelAIHelper.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:NovelAIHelper.Views"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
         x:Class="NovelAIHelper.Views.MainWindow" WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
@@ -47,7 +48,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,*,*">
+        <views:TagGridView Grid.Row="1" Grid.Column="1" DataContext="{Binding TagGroupVM}"/>
+        <!--<Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,*,*">
             <Grid Grid.Column="0">
                 <ListBox Items="{Binding FirstList}" SelectedItem="{Binding FirstList.SelectedItem}">
                     <ListBox.ItemTemplate>
@@ -89,6 +91,6 @@
                 </ListBox>
                 <Grid IsVisible="{Binding IsDragging}" Background="#55550000" DragDrop.AllowDrop="True"/>
             </Grid>
-        </Grid>
+        </Grid>-->
     </Grid>
 </Window>

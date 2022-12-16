@@ -13,7 +13,7 @@ using AvaloniaEdit.Utils;
 
 namespace NovelAIHelper.Utils.Collections
 {
-    public sealed class ObservableCollectionWithSelectedItem<T> : ObservableCollection<T> where T : class
+    public class ObservableCollectionWithSelectedItem<T> : ObservableCollection<T> where T : class
     {
         #region EventDelegate
 
@@ -31,7 +31,7 @@ namespace NovelAIHelper.Utils.Collections
         #endregion
 
         #region Public properties
-
+        
         private Func<T, bool>? _filter;
         public Func<T, bool>? Filter
         {

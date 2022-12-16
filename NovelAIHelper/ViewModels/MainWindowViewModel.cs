@@ -8,8 +8,10 @@ using Avalonia.Controls;
 using NovelAIHelper.DataBase;
 using NovelAIHelper.DataBase.Entities.DataBase;
 using NovelAIHelper.DataBase.Entities.ViewModels;
+using NovelAIHelper.Utils;
 using NovelAIHelper.Utils.Collections;
 using NovelAIHelper.Views;
+using System.Collections;
 
 namespace NovelAIHelper.ViewModels
 {
@@ -74,6 +76,22 @@ namespace NovelAIHelper.ViewModels
             set => this.RaiseAndSetIfChanged(ref _sourceDragList, value);
         }
 
+        private TagGridViewModel _tagGroupVM;
+
+        public TagGridViewModel TagGroupVM
+        {
+            get => _tagGroupVM;
+            set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
+        }
+
+        //private ObservableCollectionWithSelectedItem<TagGroup> _tagGrid;
+
+        //public ObservableCollectionWithSelectedItem<TagGroup> TagGrid
+        //{
+        //    get => _tagGrid;
+        //    set => this.RaiseAndSetIfChanged(ref _tagGrid, value);
+        //}
+
         public MainWindowViewModel()
         {
         }
@@ -83,8 +101,17 @@ namespace NovelAIHelper.ViewModels
             _wnd             = wnd;
             TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
             _firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
-            _secondList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
+            _secondList      = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
             _thirdList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(30000, 10));
+            TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
+                                                                                                 new List<TagGroup>
+                                                                                                 {
+                                                                                                     new(_firstList, "First"),
+                                                                                                     new(_secondList, "Second"),
+                                                                                                     new(_thirdList, "Third"),
+
+                                                                                                 }
+                                                                                                ));
         }
 
         private void OnTagEditorShow()
