@@ -84,14 +84,6 @@ namespace NovelAIHelper.ViewModels
             set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
         }
 
-        //private ObservableCollectionWithSelectedItem<TagGroup> _tagGrid;
-
-        //public ObservableCollectionWithSelectedItem<TagGroup> TagGrid
-        //{
-        //    get => _tagGrid;
-        //    set => this.RaiseAndSetIfChanged(ref _tagGrid, value);
-        //}
-
         public MainWindowViewModel()
         {
         }
@@ -106,9 +98,9 @@ namespace NovelAIHelper.ViewModels
             TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
                                                                                                  new List<TagGroup>
                                                                                                  {
-                                                                                                     new(_firstList, "First"),
-                                                                                                     new(_secondList, "Second"),
-                                                                                                     new(_thirdList, "Third"),
+                                                                                                     new(_firstList, "Тело"),
+                                                                                                     new(_secondList, "Одежда"),
+                                                                                                     new(_thirdList, "Поза"),
 
                                                                                                  }
                                                                                                 ));
@@ -125,34 +117,6 @@ namespace NovelAIHelper.ViewModels
                             TagTree       = new TagTree();
                             GC.Collect();
                         };
-        }
-
-        public void DragStart(ObservableCollectionWithSelectedItem<UI_Tag>? list)
-        {
-            if (list?.SelectedItem == null) return;
-            SourceDragList    = list;
-            DraggedTag        = list.SelectedItem;
-            DraggedTag.IsDrag = true;
-            IsDragging        = true;
-        }
-
-        public void DragEnd()
-        {
-            IsDragging        = false;
-            DraggedTag.IsDrag = false;
-        }
-
-        public void DragEnter(ObservableCollectionWithSelectedItem<UI_Tag>? list)
-        {
-            if (list == null || SourceDragList == list) return;
-            if(!list.Contains(DraggedTag))
-                list.Add(DraggedTag);
-        }
-
-        public void DragLeave(ObservableCollectionWithSelectedItem<UI_Tag>? list)
-        {
-            if (list == null || SourceDragList == list) return;
-            list.Remove(DraggedTag);
         }
     }
 }

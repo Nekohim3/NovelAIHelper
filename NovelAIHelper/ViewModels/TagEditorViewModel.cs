@@ -321,16 +321,6 @@ internal class TagEditorViewModel : ViewModelBase
     public void LoadTree(bool remember = false)
     {
         TagTree.LoadTree(remember);
-        //g.Ctx = new TagContext();
-        //var d = g.Ctx.Dirs.Single(x => x.Id == TagTree.RootDirs.Last().Id);
-        //var t = g.Ctx.Tags.Single(x => x.Id == TagTree.RootDirs[1].Tags.First().Id);
-        //d.Tags.Add(t);
-        //t.Dirs.Add(d);
-        //TagTree.RootDirs.Last().Tags.Add(TagTree.RootDirs[1].Tags.First());
-        //TagTree.RootDirs[1].Tags.First().Dirs.Add(TagTree.RootDirs.Last());
-        //var q =  g.Ctx.SaveChanges();
-        //TagTree.RootDirs.Last().Save();
-        //TagTree.RootDirs[1].Tags.First().
     }
 
     public void LoadTags()

@@ -10,7 +10,7 @@
         <viewModels:TagGridViewModel />
     </Design.DataContext>
 
-    <Border BorderBrush="#ff777777" BorderThickness="0,1,0,0">
+    <Border BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
     <Grid>
         <ItemsControl Items="{Binding TagGrid}">
             <ItemsControl.ItemsPanel>
@@ -20,23 +20,32 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#ff777777" BorderThickness="0,0,0,1" Margin="0">
-                        <Grid ColumnDefinitions="Auto, *">
-                            <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="5,0" FontWeight="Bold"/>
+                    <Border BorderBrush="#ff555555" BorderThickness="0,0,0,1" Margin="0,0,0,1">
+                        <Grid ColumnDefinitions="Auto, *" Background="#01000000">
+							<Grid Classes="GroupTagGrid" Background="#01000000" DragDrop.AllowDrop="True"
+                                  PointerPressed="InputElement_OnPointerPressed" PointerMoved="InputElement_OnPointerMoved">
+								<TextBlock Grid.Column="0" Text="{Binding Name}" Margin="5,0" FontWeight="Bold" FontSize="14" IsHitTestVisible="False" Height="24"/>
+                            </Grid>
                             <ItemsControl Grid.Column="1" Items="{Binding TagList}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
-										<WrapPanel Orientation="Horizontal"/>
+										<WrapPanel Orientation="Horizontal" Background="#01000000" DragDrop.AllowDrop="True" Classes="GroupTagWrapPanel"/>
 									</ItemsPanelTemplate>
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-                                        <Border BorderBrush="Green" BorderThickness="1" Margin="1,2,0,2">
-											<Grid Height="40" RowDefinitions="20,20" ColumnDefinitions="20,*,20">
-                                                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="{Binding Name}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0"/>
-												<Button Grid.Row="1" Grid.Column="0" Content="+" Command="{Binding AddStrCmd}" Padding="0" Margin="0" Width="20" Height="20" MinWidth="20" Background="#00000000" BorderThickness="1" BorderBrush="#00000000"/>
-                                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Strength}" Padding="0" Margin="0" TextAlignment="Center" MinWidth="20"/>
-												<Button Grid.Row="1" Grid.Column="2" Content="-" Command="{Binding SubStrCmd}" Padding="0" Margin="0" Width="20" Height="20" MinWidth="20" Background="#00000000" BorderThickness="1" BorderBrush="#00000000"/>
+                                        <Border Classes.Drag="{Binding IsDrag}" BorderThickness="1" Margin="1,0,0,1">
+                                            <Border.Styles>
+                                                <Style Selector="Border">
+                                                    <Setter Property="BorderBrush" Value="#ff666666"/>
+                                                </Style>
+												<Style Selector="Border.Drag">
+													<Setter Property="BorderBrush" Value="#ff339933"/>
+												</Style>
+                                            </Border.Styles>
+                                            <Grid Classes="TagGrid" Height="24" Background="#01000000" DragDrop.AllowDrop="True" PointerWheelChanged="InputElement_OnPointerWheelChanged" 
+                                                  PointerPressed="InputElement_OnPointerPressed" PointerMoved="InputElement_OnPointerMoved">
+                                                <TextBlock FontSize="14" Text="{Binding DisplayInTagGridName}" IsHitTestVisible="False" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3"/>
                                             </Grid>
 										</Border>
 									</DataTemplate>

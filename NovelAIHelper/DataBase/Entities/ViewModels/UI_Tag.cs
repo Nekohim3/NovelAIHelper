@@ -40,14 +40,40 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         public int Strength
         {
             get => _strength;
-            set => this.RaiseAndSetIfChanged(ref _strength, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _strength, value);
+                this.RaisePropertyChanged("DisplayInTagGridName");
+            }
         }
+
+
+        public string DisplayInTagGridName => $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
 
 
         public ReactiveCommand<Unit, Unit> AddStrCmd { get; }
         public ReactiveCommand<Unit, Unit> SubStrCmd      { get; }
 
+        //private int _strength;
 
+        //public int Strength
+        //{
+        //    get => _strength;
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged(ref _strength, value);
+        //        DisplayInTagGridName =
+        //            $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
+        //    }
+        //}
+
+        //private string _displayInTagGridName;
+
+        //public string DisplayInTagGridName
+        //{
+        //    get => _displayInTagGridName ??= $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
+        //    set => this.RaiseAndSetIfChanged(ref _displayInTagGridName, value);
+        //}
 
 
         public string SearchedDisplay => GetSearchedDisplay();

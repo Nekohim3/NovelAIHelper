@@ -13,6 +13,8 @@
     <Compile Remove="Models\**" />
     <EmbeddedResource Remove="Models\**" />
     <None Remove="Models\**" />
+    <AvaloniaXaml Remove="Views\TagGridView.axaml" />
+    <Compile Remove="Views\TagGridView.axaml.cs" />
     <None Remove=".gitignore" />
   </ItemGroup>
   <ItemGroup>

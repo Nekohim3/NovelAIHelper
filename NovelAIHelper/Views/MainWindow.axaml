@@ -3,7 +3,6 @@
         xmlns:vm="using:NovelAIHelper.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:NovelAIHelper.Views"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
         x:Class="NovelAIHelper.Views.MainWindow" WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
@@ -12,14 +11,14 @@
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
-<Window.Styles>
-    <Style Selector="Grid.Tag">
-        <Setter Property="Background" Value="#01000000"/>
-    </Style>
-	<Style Selector="Grid.Tag.IsDrag">
-		<Setter Property="Background" Value="#55999900"/>
-	</Style>
-</Window.Styles>
+    <Window.Styles>
+        <Style Selector="Grid.Tag">
+            <Setter Property="Background" Value="#01000000" />
+        </Style>
+        <Style Selector="Grid.Tag.IsDrag">
+            <Setter Property="Background" Value="#55999900" />
+        </Style>
+    </Window.Styles>
     <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *">
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
@@ -41,56 +40,78 @@
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.AllowAutoHide="True">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid Background="#01000000" ToolTip.Tip="{Binding SearchedDisplay}">
+                        <Grid Classes="ListBoxTagGrid" Background="#01000000" ToolTip.Tip="{Binding SearchedDisplay}"
+                              DragDrop.AllowDrop="True"
+                              PointerPressed="InputElement_OnPointerPressed" PointerMoved="InputElement_OnPointerMoved">
                             <TextBlock Text="{Binding Name}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <views:TagGridView Grid.Row="1" Grid.Column="1" DataContext="{Binding TagGroupVM}"/>
-        <!--<Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,*,*">
-            <Grid Grid.Column="0">
-                <ListBox Items="{Binding FirstList}" SelectedItem="{Binding FirstList.SelectedItem}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Classes="Tag" Classes.IsDrag="{Binding IsDrag}" PointerPressed="InputElement_OnPointerPressed"
-                                  PointerMoved="InputElement_OnPointerMoved">
-                                <TextBlock Text="{Binding Name}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Grid IsVisible="{Binding IsDragging}" Background="#55550000" DragDrop.AllowDrop="True"/>
-            </Grid>
-
-            <Grid Grid.Column="1">
-                <ListBox Items="{Binding SecondList}" SelectedItem="{Binding SecondList.SelectedItem}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-							<Grid Classes="Tag" Classes.IsDrag="{Binding IsDrag}" PointerPressed="InputElement_OnPointerPressed"
-                                  PointerMoved="InputElement_OnPointerMoved">
-                                <TextBlock Text="{Binding Name}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Grid IsVisible="{Binding IsDragging}" Background="#55550000" DragDrop.AllowDrop="True"/>
-            </Grid>
-
-            <Grid Grid.Column="2">
-                <ListBox Items="{Binding ThirdList}" SelectedItem="{Binding ThirdList.SelectedItem}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-							<Grid Classes="Tag" Classes.IsDrag="{Binding IsDrag}" PointerPressed="InputElement_OnPointerPressed"
-                                  PointerMoved="InputElement_OnPointerMoved">
-                                <TextBlock Text="{Binding Name}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Grid IsVisible="{Binding IsDragging}" Background="#55550000" DragDrop.AllowDrop="True"/>
-            </Grid>
-        </Grid>-->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Border BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
+                <Grid>
+                    <ItemsControl Items="{Binding TagGroupVM.TagGrid}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#ff555555" BorderThickness="0,0,0,1" Margin="0,0,0,1">
+                                    <Grid ColumnDefinitions="Auto, *" Background="#01000000">
+                                        <Grid Classes="GroupTagGrid" Background="#01000000" DragDrop.AllowDrop="True"
+                                              PointerPressed="InputElement_OnPointerPressed"
+                                              PointerMoved="InputElement_OnPointerMoved">
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="5,0"
+                                                       FontWeight="Bold" FontSize="14" IsHitTestVisible="False"
+                                                       Height="24" />
+                                        </Grid>
+                                        <ItemsControl Grid.Column="1" Items="{Binding TagList}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal" Background="#01000000"
+                                                               DragDrop.AllowDrop="True" Classes="GroupTagWrapPanel" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Classes.Drag="{Binding IsDrag}" BorderThickness="1"
+                                                            Margin="1,0,0,1">
+                                                        <Border.Styles>
+                                                            <Style Selector="Border">
+                                                                <Setter Property="BorderBrush" Value="#ff666666" />
+                                                            </Style>
+                                                            <Style Selector="Border.Drag">
+                                                                <Setter Property="BorderBrush" Value="#ff339933" />
+                                                            </Style>
+                                                        </Border.Styles>
+                                                        <Grid Classes="TagGrid" Height="24" Background="#01000000"
+                                                              DragDrop.AllowDrop="True"
+                                                              PointerWheelChanged="InputElement_OnPointerWheelChanged"
+                                                              PointerPressed="InputElement_OnPointerPressed"
+                                                              PointerMoved="InputElement_OnPointerMoved">
+                                                            <TextBlock FontSize="14"
+                                                                       Text="{Binding DisplayInTagGridName}"
+                                                                       IsHitTestVisible="False" TextAlignment="Center"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center" Margin="5,3" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Grid Grid.Column="1" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+        <!--<views:TagGridView x:Name="TagGridView" Grid.Row="1" Grid.Column="1" DataContext="{Binding TagGroupVM}"/>-->
     </Grid>
 </Window>
