@@ -7,63 +7,66 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 
-namespace NovelAIHelper.DataBase.Entities.DataBase
+namespace NovelAIHelper.DataBase.Entities.DataBase;
+
+public class Tag : IdEntity
 {
-    public class Tag : ViewModelBase
+    private string _name;
+    public string Name
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get;       set; }
-
-        //public string  Name { get; set; } = string.Empty;
-        //public string? Link { get; set; }
-
-        private string _name;
-
-        public string Name
-        {
-            get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
-        }
-
-        private string? _link;
-
-        public string? Link
-        {
-            get => _link;
-            set => this.RaiseAndSetIfChanged(ref _link, value);
-        }
-
-        private int _dirId;
-
-        public int DirId
-        {
-            get => _dirId;
-            set => this.RaiseAndSetIfChanged(ref _dirId, value);
-        }
-
-        [ForeignKey("DirId")]
-        public virtual Dir Dir { get; set; }
-
-        public virtual ICollection<PartTag> SessionTags { get; set; } = new List<PartTag>();
-
-        //public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
-
-        public Tag()
-        {
-
-        }
-
-        public Tag(string name, int dirId, string? link = null)
-        {
-            Name  = name;
-            DirId = dirId;
-            Link  = link;
-        }
-
-        public Tag(string name, string? link = null)
-        {
-            Name  = name;
-            Link  = link;
-        }
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
     }
+
+    private string? _link;
+    public string? Link
+    {
+        get => _link;
+        set => this.RaiseAndSetIfChanged(ref _link, value);
+    }
+
+    private string? _comment;
+    public string? Comment
+    {
+        get => _comment;
+        set => this.RaiseAndSetIfChanged(ref _comment, value);
+    }
+    
+    public                               int IdDir { get; set; }
+    [ForeignKey("IdDir")] public virtual Dir Dir   { get; set; }
+
+    public virtual ICollection<PartTag> SessionTags { get; set; } = new List<PartTag>();
+
+    public Tag()
+    {
+        _name    = "";
+        _link    = null;
+        _comment = null;
+    }
+
+    public Tag(string name, int dirId, string? link = null, string? comment = null)
+    {
+        _name    = name;
+        IdDir   = dirId;
+        _link    = link;
+        _comment = comment;
+    }
+
+    public Tag(string name, string? link = null)
+    {
+        _name    = name;
+        _link    = link;
+        _comment = null;
+    }
+
+    
+    protected bool Equals(Tag tag)
+    {
+        var eq = base.Equals(tag);
+        if (!eq)
+            return tag.Name == Name;
+        return false;
+    }
+
+    public override int GetHashCode() { return HashCode.Combine(Id, Name); }
 }

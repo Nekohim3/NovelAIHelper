@@ -9,11 +9,8 @@ using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.DataBase
 {
-    public class Session : ViewModelBase
+    public class Session : IdEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         private string _name;
 
         public string Name
@@ -22,19 +19,36 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
             set => this.RaiseAndSetIfChanged(ref _name, value);
         }
 
-        private string _comment;
+        private string? _comment;
 
-        public string Comment
+        public string? Comment
         {
             get => _comment;
             set => this.RaiseAndSetIfChanged(ref _comment, value);
         }
         
-        public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
+        public virtual ICollection<SessionPart> Parts { get; set; } = new List<SessionPart>();
 
         public Session()
         {
-            
+            _name    = "";
+            _comment = null;
         }
+
+        public Session(string name, string? comment = null)
+        {
+            _name    = name;
+            _comment = comment;
+        }
+
+        protected bool Equals(Session session)
+        {
+            var eq = base.Equals(session);
+            if (!eq)
+                return session.Name == Name;
+            return false;
+        }
+
+        public override int GetHashCode() { return HashCode.Combine(Id, Name); }
     }
 }

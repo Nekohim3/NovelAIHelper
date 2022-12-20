@@ -11,16 +11,13 @@ using NovelAIHelper.DataBase.Entities.DataBase;
 using ReactiveUI;
 using NovelAIHelper.Utils.Collections;
 using NovelAIHelper.DataBase.Services;
+using NovelAIHelper.Utils;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
 {
     public class UI_Tag : Tag, ISelected, IDraggable
     {
-        public static MapperConfiguration Map    = new(x => x.CreateMap<Tag, UI_Tag>());
-        public static Mapper              Mapper = new(Map);
-
         private bool _isSelected;
-
         public bool IsSelected
         {
             get => _isSelected;
@@ -28,7 +25,6 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         }
 
         private bool _isDrag;
-
         public bool IsDrag
         {
             get => _isDrag;
@@ -36,7 +32,6 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         }
 
         private int _strength;
-
         public int Strength
         {
             get => _strength;
@@ -47,53 +42,19 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             }
         }
 
-
-        public string DisplayInTagGridName => $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
-
-
-        public ReactiveCommand<Unit, Unit> AddStrCmd { get; }
-        public ReactiveCommand<Unit, Unit> SubStrCmd      { get; }
-
-        //private int _strength;
-
-        //public int Strength
-        //{
-        //    get => _strength;
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged(ref _strength, value);
-        //        DisplayInTagGridName =
-        //            $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
-        //    }
-        //}
-
-        //private string _displayInTagGridName;
-
-        //public string DisplayInTagGridName
-        //{
-        //    get => _displayInTagGridName ??= $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
-        //    set => this.RaiseAndSetIfChanged(ref _displayInTagGridName, value);
-        //}
-
-
-        public string SearchedDisplay => GetSearchedDisplay();
-
-        //private ObservableCollectionWithSelectedItem<UI_Dir> _ui_Dirs = new();
-
-        //public ObservableCollectionWithSelectedItem<UI_Dir> UI_Dirs
-        //{
-        //    get => _ui_Dirs;// ??= new ObservableCollectionWithSelectedItem<UI_Dir>(UI_Dir.Mapper.Map<ICollection<Dir>, ICollection<UI_Dir>>(Dirs));
-        //    set => this.RaiseAndSetIfChanged(ref _ui_Dirs, value);
-        //}
-
         private UI_Dir _uI_Dir;
-
         public UI_Dir UI_Dir
         {
             get => _uI_Dir;
             set => this.RaiseAndSetIfChanged(ref _uI_Dir, value);
         }
 
+        public string SearchedDisplay => GetSearchedDisplay();
+        public string DisplayInTagGridName => $"{(Strength > 0 ? new string('(', Strength) : new string('{', Math.Abs(Strength)))}{Name}{(Strength > 0 ? new string(')', Strength) : new string('}', Math.Abs(Strength)))}";
+        
+        public ReactiveCommand<Unit, Unit> AddStrCmd { get; }
+        public ReactiveCommand<Unit, Unit> SubStrCmd      { get; }
+        
         public UI_Tag()
         {
             AddStrCmd = ReactiveCommand.Create(OnAddStr);
@@ -112,31 +73,9 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
 
-        public bool Save()
-        {
-            if (Id == 0) return Add();
-            var service = new TagService();
-            return service.Save(this);
-        }
-
-        public bool Add()
-        {
-            if (Id != 0) return Save();
-            var service = new TagService();
-            return service.Add(this);
-        }
-
-        public bool Remove()
-        {
-            if (Id == 0) return false;
-            var service = new TagService();
-            return service.Remove(this);
-        }
-
         private string GetSearchedDisplay()
         {
             var str = $"{Name}\n  {UI_Dir.SearchedDisplay}";
-
             return str.TrimEnd('\n');
         }
 

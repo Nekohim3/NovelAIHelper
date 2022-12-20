@@ -25,8 +25,7 @@ namespace NovelAIHelper.Utils.TagDownloader
 
         public bool SaveDirs(IList<UI_Dir> dirsTree)
         {
-            var service = new DirService();
-            return service.AddRange(dirsTree);
+            return new DirService().SaveRange(dirsTree);
         }
 
         public void DownloadAll()
@@ -41,9 +40,6 @@ namespace NovelAIHelper.Utils.TagDownloader
         {
             var client = new HttpClient();
             var html   = client.GetStringAsync(CombineUrl(path)).Result;
-            
-            //var html   = new WebClient().DownloadString(CombineUrl(path));
-            //var html = Http.GetHtml($"/{path.TrimStart('/')}");
             var doc  = new HtmlDocument();
             doc.LoadHtml(html);
             var wikibody = doc.GetElementbyId("wiki-page-body");

@@ -199,24 +199,24 @@ internal class TagEditorViewModel : ViewModelBase
 
     private async void OnSaveDir()
     {
-        if (EditedDir.Id == 0)
-        {
-            EditedDir.Add();
-            if (EditedDir.ParentId.HasValue)
-            {
-                TagTree.RootDirs.SelectedItem.ChildDirs.Add(EditedDir);
-                LoadTree(true);
-            }
-            else
-            {
-                TagTree.RootDirs.Add(EditedDir);
-            }
-        }
-        else
-        {
-            TagTree.RootDirs.SelectedItem.Name = EditedDir.Name;
-            TagTree.RootDirs.SelectedItem.Save();
-        }
+        //if (EditedDir.Id == 0)
+        //{
+        //    EditedDir.Add();
+        //    if (EditedDir.ParentId.HasValue)
+        //    {
+        //        TagTree.RootDirs.SelectedItem.ChildDirs.Add(EditedDir);
+        //        LoadTree(true);
+        //    }
+        //    else
+        //    {
+        //        TagTree.RootDirs.Add(EditedDir);
+        //    }
+        //}
+        //else
+        //{
+        //    TagTree.RootDirs.SelectedItem.Name = EditedDir.Name;
+        //    TagTree.RootDirs.SelectedItem.Save();
+        //}
 
         DirEditVisible = false;
         EditedDir      = null;
@@ -235,7 +235,7 @@ internal class TagEditorViewModel : ViewModelBase
         var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove dir: \"{TagTree.RootDirs.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
         if (res == ButtonResult.Yes)
         {
-            TagTree.RootDirs.SelectedItem.Remove();
+            //TagTree.RootDirs.SelectedItem.Remove();
             if (TagTree.RootDirs.SelectedItem.UI_Parent == null)
             {
                 TagTree.RootDirs.Remove(TagTree.RootDirs.SelectedItem);
@@ -274,7 +274,7 @@ internal class TagEditorViewModel : ViewModelBase
         var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove tag: \"{TagTree.Tags.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
         if (res == ButtonResult.Yes)
         {
-            TagTree.Tags.SelectedItem.Remove();
+            //TagTree.Tags.SelectedItem.Remove();
             LoadTree(true);
         }
     }
@@ -293,14 +293,14 @@ internal class TagEditorViewModel : ViewModelBase
         if (EditedTag.Id == 0)
         {
             TagTree.RootDirs.SelectedItem.Tags.Add(EditedTag);
-            TagTree.RootDirs.SelectedItem.Save();
+            //TagTree.RootDirs.SelectedItem.Save();
             //EditedTag.Dirs.Add(TagTree.RootDirs.SelectedItem);
             //EditedTag.Add();
         }
         else
         {
             TagTree.Tags.SelectedItem.Name = EditedTag.Name;
-            TagTree.Tags.SelectedItem.Save();
+            //TagTree.Tags.SelectedItem.Save();
         }
 
         TagEditVisible = false;

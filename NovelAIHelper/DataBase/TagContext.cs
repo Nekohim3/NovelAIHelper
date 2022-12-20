@@ -8,12 +8,13 @@ using NovelAIHelper.DataBase.Entities.DataBase;
 
 namespace NovelAIHelper.DataBase
 {
-    internal class TagContext : DbContext
+    public class TagContext : DbContext
     {
-        public DbSet<Dir>        Dirs       { get; set; }
-        public DbSet<Tag>        Tags       { get; set; }
-        public DbSet<Session>    Sessions   { get; set; }
-        public DbSet<PartTag> SessionTags { get; set; }
+        public DbSet<Dir>         Dirs         { get; set; }
+        public DbSet<Tag>         Tags         { get; set; }
+        public DbSet<Session>     Sessions     { get; set; }
+        public DbSet<SessionPart> SessionParts { get; set; }
+        public DbSet<PartTag>     PartTags     { get; set; }
 
         public TagContext(bool resetDatabase = false)
         {
@@ -22,12 +23,10 @@ namespace NovelAIHelper.DataBase
             Database.EnsureCreated();
             
         }
-
-
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=NovelAIHelper;Username=postgres;Password=KuroNeko2112@");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=NovelAIHelper;Username=postgres;Password=KuroNeko2112");
         }
     }
 }

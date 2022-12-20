@@ -95,25 +95,25 @@ namespace NovelAIHelper.ViewModels
 
         public MainWindowViewModel(Window wnd)
         {
-            var sess = new UI_Session();
-            sess.Name        = "qwe";
-            sess.Comment     = "asd";
-            sess.Save();
-            sess.Name        = "123";
-            sess.Save();
+            //var sess = new UI_Session();
+            //sess.Name        = "qwe";
+            //sess.Comment     = "asd";
+            //sess.Save();
+            //sess.Name        = "123";
+            //sess.Save();
             AddGroupCmd      = ReactiveCommand.Create(OnAddGroup);
             CancelGroupCmd   = ReactiveCommand.Create(OnCancelGroup);
             _wnd             = wnd;
             TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
-            _firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
-            _secondList      = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
-            _thirdList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(30000, 10));
+            //_firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
+            //_secondList      = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
+            //_thirdList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(30000, 10));
             TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
                                                                                                  new List<TagGroup>
                                                                                                  {
-                                                                                                     new(_firstList, "Тело"),
-                                                                                                     new(_secondList, "Одежда"),
-                                                                                                     new(_thirdList, "Поза"),
+                                                                                                     //new(_firstList, "Тело"),
+                                                                                                     //new(_secondList, "Одежда"),
+                                                                                                     //new(_thirdList, "Поза"),
 
                                                                                                  }
                                                                                                 ));
