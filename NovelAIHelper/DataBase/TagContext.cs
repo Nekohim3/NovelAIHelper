@@ -10,8 +10,10 @@ namespace NovelAIHelper.DataBase
 {
     internal class TagContext : DbContext
     {
-        public DbSet<Dir>    Dirs    { get; set; }
-        public DbSet<Tag>    Tags    { get; set; }
+        public DbSet<Dir>        Dirs       { get; set; }
+        public DbSet<Tag>        Tags       { get; set; }
+        public DbSet<Session>    Sessions   { get; set; }
+        public DbSet<PartTag> SessionTags { get; set; }
 
         public TagContext(bool resetDatabase = false)
         {

@@ -44,6 +44,8 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
         [ForeignKey("DirId")]
         public virtual Dir Dir { get; set; }
 
+        public virtual ICollection<PartTag> SessionTags { get; set; } = new List<PartTag>();
+
         //public virtual ICollection<Dir> Dirs { get; set; } = new List<Dir>();
 
         public Tag()

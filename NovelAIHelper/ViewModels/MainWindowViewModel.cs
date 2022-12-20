@@ -12,6 +12,8 @@ using NovelAIHelper.Utils;
 using NovelAIHelper.Utils.Collections;
 using NovelAIHelper.Views;
 using System.Collections;
+using System.Runtime.Intrinsics.X86;
+using NovelAIHelper.DataBase.Services;
 
 namespace NovelAIHelper.ViewModels
 {
@@ -84,12 +86,23 @@ namespace NovelAIHelper.ViewModels
             set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
         }
 
+        public ReactiveCommand<Unit, Unit> AddGroupCmd { get; }
+        public ReactiveCommand<Unit, Unit> CancelGroupCmd        { get; }
+        
         public MainWindowViewModel()
         {
         }
 
         public MainWindowViewModel(Window wnd)
         {
+            var sess = new UI_Session();
+            sess.Name        = "qwe";
+            sess.Comment     = "asd";
+            sess.Save();
+            sess.Name        = "123";
+            sess.Save();
+            AddGroupCmd      = ReactiveCommand.Create(OnAddGroup);
+            CancelGroupCmd   = ReactiveCommand.Create(OnCancelGroup);
             _wnd             = wnd;
             TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
             _firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
@@ -117,6 +130,16 @@ namespace NovelAIHelper.ViewModels
                             TagTree       = new TagTree();
                             GC.Collect();
                         };
+        }
+
+        private void OnAddGroup()
+        {
+
+        }
+
+        private void OnCancelGroup()
+        {
+
         }
     }
 }

@@ -37,11 +37,25 @@ public partial class MainWindow : Window
     {
         if (sender is Grid tagGrid && tagGrid.Classes.Contains("TagGrid") && tagGrid.Parent is Border {Parent: ContentPresenter {Parent: ItemsControl tagCtrl}})
         {
-            _startPos   = new Point(e.GetPosition(this));
-            _captured   = true;
-            _tag        = tagGrid.DataContext as UI_Tag;
-            _tagGroup   = tagCtrl.DataContext as TagGroup;
-            _dragObject = DragObject.Tag;
+            if (e.KeyModifiers == KeyModifiers.None)
+            {
+                _startPos   = new Point(e.GetPosition(this));
+                _captured   = true;
+                _tag        = tagGrid.DataContext as UI_Tag;
+                _tagGroup   = tagCtrl.DataContext as TagGroup;
+                _dragObject = DragObject.Tag;
+            }
+            else
+            {
+                var res = await MessageBoxManager
+                                .GetMessageBoxStandardWindow("", $"Remove tag: \"{_tagGroup.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                                .ShowDialog(this);
+                if (res == ButtonResult.Yes)
+                {
+                    var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                    vm.TagGrid.Remove(_tagGroup);
+                }
+            }
         }
         else if (sender is Grid groupTagGrid && groupTagGrid.Classes.Contains("GroupTagGrid"))
         {
@@ -55,12 +69,12 @@ public partial class MainWindow : Window
             else if (e.KeyModifiers == KeyModifiers.Control)
             {
                 var res = await MessageBoxManager
-                                .GetMessageBoxStandardWindow("", $"Remove tag group: \"{(groupTagGrid.DataContext as TagGroup).Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                                .GetMessageBoxStandardWindow("", $"Remove tag group: \"{_tagGroup.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
                     var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                    vm.TagGrid.Remove((groupTagGrid.DataContext as TagGroup));
+                    //vm.TagGrid.Remove((groupTagGrid.DataContext as TagGroup));
                 }
             }
         }

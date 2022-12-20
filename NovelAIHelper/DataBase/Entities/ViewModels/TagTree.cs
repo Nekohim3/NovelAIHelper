@@ -40,6 +40,14 @@ public class TagTree : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _searchedTags, value);
     }
 
+    private ObservableCollectionWithSelectedItem<UI_Session> _sessions = new();
+
+    public ObservableCollectionWithSelectedItem<UI_Session> Sessions
+    {
+        get => _sessions;
+        set => this.RaiseAndSetIfChanged(ref _sessions, value);
+    }
+
     private string _searchString;
 
     public string SearchString
@@ -52,23 +60,26 @@ public class TagTree : ViewModelBase
         }
     }
 
-    private List<UI_Dir> _dirList     = new();
-    private List<UI_Tag> _tagList     = new();
-    private List<int>    _expandedIds = new();
-    private int          _selectedId;
+    private List<UI_Dir>        _dirList        = new();
+    private List<UI_Tag>        _tagList        = new();
+    private List<UI_Session>    _sessionList    = new();
+    private List<UI_PartTag> _sessionTagList = new();
+    private List<int>           _expandedIds    = new();
+    private int                 _selectedId;
 
     public void LoadTree(bool remember = false)
     {
         if (remember)
             RememberExpandedAndSelected();
         RootDirs.Clear();
-        var dirs = new DirService().GetAllDirs().ToList();
-        _dirList = dirs;
-        var tags = new TagService().GetAllTags().ToList();
-        _tagList = tags;
-        AssignTagsToDirs(dirs, tags);
-        BuildTree(dirs);
-        if(remember)
+        _dirList        = new DirService().GetAllDirs().ToList();
+        _tagList        = new TagService().GetAllTags().ToList();
+        _sessionList    = new SessionService().GetAll().ToList();
+        _sessionTagList = new SessionTagService().GetAll().ToList();
+
+        AssignTagsToDirs(_dirList, _tagList);
+        BuildTree(_dirList);
+        if (remember)
             RestoreExpandedAndSelected();
     }
 
@@ -115,9 +126,12 @@ public class TagTree : ViewModelBase
     public void Search(string name)
     {
         SearchedTags.Clear();
-        if(!string.IsNullOrEmpty(name.Trim(' ')))
+        if (!string.IsNullOrEmpty(name.Trim(' ')))
             SearchedTags.AddRange(_tagList.Where(x => x.Name.ToLower().Contains(name.Trim(' ').ToLower())));
     }
 
-    public List<UI_Tag> GetRange(int startIndex, int length) => _tagList.Skip(startIndex).Take(length).ToList();
+    public List<UI_Tag> GetRange(int startIndex, int length)
+    {
+        return _tagList.Skip(startIndex).Take(length).ToList();
+    }
 }
