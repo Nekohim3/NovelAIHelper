@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,5 +29,18 @@ public class UI_Session : Session, ISelected
         set => this.RaiseAndSetIfChanged(ref _isSelected, value);
     }
 
-    public UI_Session() { }
+    public UI_Session()
+    {
+        UI_SessionParts.CollectionChanged += UI_SessionPartsOnCollectionChanged;
+    }
+
+    public UI_Session(string name, string? comment = null) : base(name, comment)
+    {
+        UI_SessionParts.CollectionChanged += UI_SessionPartsOnCollectionChanged;
+    }
+
+    private void UI_SessionPartsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        Parts = UI_SessionParts.OfType<SessionPart>().ToList();
+    }
 }

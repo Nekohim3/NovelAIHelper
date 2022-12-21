@@ -44,6 +44,21 @@ public class PartTag : IdEntity
         _strength = strength;
     }
 
+    //public PartTag(Tag tag, int order, int strength)
+    //{
+    //    _order    = order;
+    //    _strength = strength;
+    //    Tag       = tag;
+    //    IdTag     = tag.Id;
+    //}
+
+    public PartTag(int idTag, int order, int strength)
+    {
+        _order    = order;
+        _strength = strength;
+        IdTag     = idTag;
+    }
+
     protected bool Equals(PartTag partTag)
     {
         var eq = base.Equals(partTag);

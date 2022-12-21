@@ -60,14 +60,14 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             AddStrCmd = ReactiveCommand.Create(OnAddStr);
             SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
-
-        public UI_Tag(string name, int dirId, string? link = null) : base(name, dirId, link)
+        
+        public UI_Tag(string name, string? link = null, string? comment = null) : base(name, link, comment)
         {
             AddStrCmd = ReactiveCommand.Create(OnAddStr);
             SubStrCmd = ReactiveCommand.Create(OnSubStr);
         }
 
-        public UI_Tag(string name, string? link = null) : base(name, link)
+        public UI_Tag(string name, int dirId, string? link = null, string? comment = null) : base(name, dirId, link, comment)
         {
             AddStrCmd = ReactiveCommand.Create(OnAddStr);
             SubStrCmd = ReactiveCommand.Create(OnSubStr);

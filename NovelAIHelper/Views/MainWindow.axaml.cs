@@ -52,8 +52,8 @@ public partial class MainWindow : Window
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
-                    var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                    vm.TagGrid.Remove(_tagGroup);
+                    //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                    //vm.TagGrid.Remove(_tagGroup);
                 }
             }
         }
@@ -73,7 +73,7 @@ public partial class MainWindow : Window
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
-                    var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                    //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
                     //vm.TagGrid.Remove((groupTagGrid.DataContext as TagGroup));
                 }
             }
@@ -93,29 +93,29 @@ public partial class MainWindow : Window
         if (!_isDrag && _captured && _startPos.Far(e.GetPosition(this)))
         {
             _isDrag = true;
-            var vm       = (DataContext as MainWindowViewModel).TagGroupVM;
+            //var vm       = (DataContext as MainWindowViewModel).TagGroupVM;
             var dragData = new DataObject();
             if (_dragObject == DragObject.Tag)
             {
                 if (_tag == null) return;
                 dragData.Set("NovelAIHelper.UI_Tag", "");
-                vm.DragStart(_tagGroup, _tag, _dragObject);
+                //vm.DragStart(_tagGroup, _tag, _dragObject);
             }
             else if (_dragObject == DragObject.Group)
             {
                 if (_tagGroup == null) return;
                 dragData.Set("NovelAIHelper.TagGroup", "");
-                vm.DragStart(_tagGroup, _dragObject);
+                //vm.DragStart(_tagGroup, _dragObject);
             }
             else if (_dragObject == DragObject.SearchedTag)
             {
                 if (_tag == null) return;
                 dragData.Set("NovelAIHelper.UI_Tag", "");
-                vm.DragStart(_tagGroup, _tag, _dragObject);
+                //vm.DragStart(_tagGroup, _tag, _dragObject);
             }
 
             await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
-            vm.DragEnd();
+            //vm.DragEnd();
             _isDrag   = false;
             _captured = false;
             _tag      = null;
@@ -131,8 +131,8 @@ public partial class MainWindow : Window
             if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
             {
                 e.DragEffects = DragDropEffects.Move;
-                var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                vm.DragOver(tagCtrl.DataContext as TagGroup, tagGrid.DataContext as UI_Tag);
+                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                //vm.DragOver(tagCtrl.DataContext as TagGroup, tagGrid.DataContext as UI_Tag);
             }
             else
             {
@@ -144,8 +144,8 @@ public partial class MainWindow : Window
             if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
             {
                 e.DragEffects = DragDropEffects.Move;
-                var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                vm.DragOver(panel.DataContext as TagGroup);
+                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                //vm.DragOver(panel.DataContext as TagGroup);
             }
             else
             {
@@ -157,8 +157,8 @@ public partial class MainWindow : Window
             if (_dragObject == DragObject.Group)
             {
                 e.DragEffects = DragDropEffects.Move;
-                var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                vm.DragOver(groupTagGrid.DataContext as TagGroup);
+                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
+                //vm.DragOver(groupTagGrid.DataContext as TagGroup);
             }
             else
             {

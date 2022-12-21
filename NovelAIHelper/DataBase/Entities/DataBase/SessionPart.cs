@@ -36,16 +36,16 @@ public class SessionPart : IdEntity
         _comment = null;
     }
 
+    public SessionPart(string name, string? comment = null)
+    {
+        _name     = name;
+        _comment  = comment;
+    }
+
     public SessionPart(string name, int idSession, string? comment = null)
     {
         _name     = name;
         IdSession = idSession;
-        _comment  = comment;
-    }
-
-    public SessionPart(string name, string? comment = null)
-    {
-        _name     = name;
         _comment  = comment;
     }
 

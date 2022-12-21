@@ -78,13 +78,13 @@ namespace NovelAIHelper.ViewModels
             set => this.RaiseAndSetIfChanged(ref _sourceDragList, value);
         }
 
-        private TagGridViewModel _tagGroupVM;
+        //private TagGridViewModel _tagGroupVM;
 
-        public TagGridViewModel TagGroupVM
-        {
-            get => _tagGroupVM;
-            set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
-        }
+        //public TagGridViewModel TagGroupVM
+        //{
+        //    get => _tagGroupVM;
+        //    set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
+        //}
 
         public ReactiveCommand<Unit, Unit> AddGroupCmd { get; }
         public ReactiveCommand<Unit, Unit> CancelGroupCmd        { get; }
@@ -108,15 +108,15 @@ namespace NovelAIHelper.ViewModels
             //_firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
             //_secondList      = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
             //_thirdList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(30000, 10));
-            TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
-                                                                                                 new List<TagGroup>
-                                                                                                 {
-                                                                                                     //new(_firstList, "Тело"),
-                                                                                                     //new(_secondList, "Одежда"),
-                                                                                                     //new(_thirdList, "Поза"),
+            //TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
+            //                                                                                     new List<TagGroup>
+            //                                                                                     {
+            //                                                                                         //new(_firstList, "Тело"),
+            //                                                                                         //new(_secondList, "Одежда"),
+            //                                                                                         //new(_thirdList, "Поза"),
 
-                                                                                                 }
-                                                                                                ));
+            //                                                                                     }
+            //                                                                                    ));
         }
 
         private void OnTagEditorShow()

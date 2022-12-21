@@ -51,7 +51,7 @@
         <Grid Grid.Row="1" Grid.Column="1">
             <Border BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
                 <Grid>
-                    <ItemsControl Items="{Binding TagGroupVM.TagGrid}">
+                    <ItemsControl Items="{Binding TagTree.Sessions.SelectedItem.UI_SessionParts}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel />
@@ -68,7 +68,7 @@
                                                        FontWeight="Bold" FontSize="14" IsHitTestVisible="False"
                                                        Height="24" />
                                         </Grid>
-                                        <ItemsControl Grid.Column="1" Items="{Binding TagList}">
+                                        <ItemsControl Grid.Column="1" Items="{Binding UI_PartTags}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
                                                     <WrapPanel Orientation="Horizontal" Background="#01000000"
@@ -77,7 +77,7 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border Classes.Drag="{Binding IsDrag}" BorderThickness="1"
+                                                    <Border Classes.Drag="{Binding UI_Tag.IsDrag}" BorderThickness="1"
                                                             Margin="1,0,0,1">
                                                         <Border.Styles>
                                                             <Style Selector="Border">
@@ -93,7 +93,7 @@
                                                               PointerPressed="InputElement_OnPointerPressed"
                                                               PointerMoved="InputElement_OnPointerMoved">
                                                             <TextBlock FontSize="14"
-                                                                       Text="{Binding DisplayInTagGridName}"
+                                                                       Text="{Binding UI_Tag.DisplayInTagGridName}"
                                                                        IsHitTestVisible="False" TextAlignment="Center"
                                                                        HorizontalAlignment="Center"
                                                                        VerticalAlignment="Center" Margin="5,3" />

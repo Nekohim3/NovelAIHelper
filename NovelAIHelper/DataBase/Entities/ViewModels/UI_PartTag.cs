@@ -24,10 +24,24 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
         public UI_Tag UI_Tag
         {
             get => _uI_Tag;
-            set => this.RaiseAndSetIfChanged(ref _uI_Tag, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _uI_Tag, value);
+                IdTag = _uI_Tag.Id;
+            }
         }
 
         public UI_PartTag()
+        {
+
+        }
+
+        public UI_PartTag(int order, int strength) : base(order, strength)
+        {
+
+        }
+
+        public UI_PartTag(int idTag, int order, int strength) : base(idTag, order, strength)
         {
             
         }

@@ -11,213 +11,208 @@ using NovelAIHelper.DataBase.Entities.DataBase;
 using NovelAIHelper.DataBase.Entities.ViewModels;
 using NovelAIHelper.DataBase.Services;
 
-namespace NovelAIHelper.Utils.TagDownloader
+namespace NovelAIHelper.Utils.TagDownloader;
+
+internal class DanbooruLoader
 {
-    internal class DanbooruLoader
+    public static string       BaseAddress = "https://danbooru.donmai.us";
+    public        List<UI_Dir> DirTree     = new();
+
+    public DanbooruLoader()
     {
-        public static string       BaseAddress = "https://danbooru.donmai.us";
-        public        List<UI_Dir> DirTree     = new List<UI_Dir>();
+    }
 
-        public DanbooruLoader()
+    public bool SaveDirs(IList<UI_Dir> dirsTree)
+    {
+        return new DirService().SaveRange(dirsTree);
+    }
+
+    public void DownloadAll()
+    {
+        var loader = new DanbooruLoader();
+        DirTree = loader.DownloadDirs().ToList();
+        LoadTagsForDirTree();
+        var saved = loader.SaveDirs(DirTree);
+    }
+
+    private HtmlNode GetWikiBody(string path)
+    {
+        var client = new HttpClient();
+        var html   = client.GetStringAsync(CombineUrl(path)).Result;
+        var doc    = new HtmlDocument();
+        doc.LoadHtml(html);
+        var wikibody = doc.GetElementbyId("wiki-page-body");
+        return wikibody;
+    }
+
+    private IEnumerable<HtmlNode> DownloadUls(HtmlNode wikibody)
+    {
+        return wikibody.ChildNodes.Where(x => x.Name.ToLower() == "ul");
+    }
+
+    public IList<UI_Dir> DownloadDirs()
+    {
+        var uls      = DownloadUls(GetWikiBody("wiki_pages/tag_groups"));
+        var dirsTree = new List<UI_Dir>();
+        foreach (var ul in uls)
         {
-
+            if (ul.PreviousSibling.InnerText.ToLower().Contains("see also")) continue;
+            var dir = new UI_Dir(ul.PreviousSibling.InnerText);
+            if (dir.Name.ToLower().Contains("tag group:"))
+                dir.Name = dir.Name.Remove(0, "tag group:".Length);
+            LoadDirChilds(dir, ul);
+            dirsTree.Add(dir);
         }
 
-        public bool SaveDirs(IList<UI_Dir> dirsTree)
-        {
-            return new DirService().SaveRange(dirsTree);
-        }
+        return dirsTree;
+    }
 
-        public void DownloadAll()
-        {
-            var loader   = new DanbooruLoader();
-            DirTree = loader.DownloadDirs().ToList();
-            LoadTagsForDirTree();
-            var saved    = loader.SaveDirs(DirTree);
-        }
-
-        private HtmlNode GetWikiBody(string path)
-        {
-            var client = new HttpClient();
-            var html   = client.GetStringAsync(CombineUrl(path)).Result;
-            var doc  = new HtmlDocument();
-            doc.LoadHtml(html);
-            var wikibody = doc.GetElementbyId("wiki-page-body");
-            return wikibody;
-        }
-
-        private IEnumerable<HtmlNode> DownloadUls(HtmlNode wikibody)
-        {
-            return wikibody.ChildNodes.Where(x => x.Name.ToLower() == "ul");
-        }
-
-        public IList<UI_Dir> DownloadDirs()
-        {
-            var uls      = DownloadUls(GetWikiBody("wiki_pages/tag_groups"));
-            var dirsTree = new List<UI_Dir>();
-            foreach (var ul in uls)
+    private void LoadDirChilds(UI_Dir dir, HtmlNode node)
+    {
+        foreach (var child in node.ChildNodes)
+            if (child.Name.ToLower() == "li")
             {
-                if (ul.PreviousSibling.InnerText.ToLower().Contains("see also")) continue;
-                var dir = new UI_Dir(ul.PreviousSibling.InnerText);
-                if (dir.Name.ToLower().Contains("tag group:"))
-                    dir.Name = dir.Name.Remove(0, "tag group:".Length);
-                LoadDirChilds(dir, ul);
-                dirsTree.Add(dir);
-            }
-
-            return dirsTree;
-        }
-
-        private void LoadDirChilds(Dir dir, HtmlNode node)
-        {
-            foreach (var child in node.ChildNodes)
-            {
-                if (child.Name.ToLower() == "li")
+                var aNode = child.ChildNodes.FirstOrDefault(x => x.Name.ToLower() == "a");
+                if (aNode != null)
                 {
-                    var aNode = child.ChildNodes.FirstOrDefault(x => x.Name.ToLower() == "a");
-                    if (aNode != null)
+                    var newDir = new UI_Dir();
+                    if (aNode.InnerText.ToLower().Contains("tag group:"))
                     {
-                        var newDir = new UI_Dir();
-                        if (aNode.InnerText.ToLower().Contains("tag group:"))
-                            newDir.Name = aNode.InnerText.Remove(0, "tag group:".Length);
-                        else if (aNode.InnerText.ToLower().Contains("list of "))
-                            newDir.Name = aNode.InnerText.Remove(0, "list of ".Length);
-                        else
-                        {
-                            newDir.Name = aNode.InnerText;
-                            dir.Tags.Add(new UI_Tag(aNode.InnerText, aNode.GetAttributeValue("href", null)));
-                        }
-                        newDir.Link = aNode.GetAttributeValue("href", null);
-                        dir.ChildDirs.Add(newDir);
+                        newDir.Name = aNode.InnerText.Remove(0, "tag group:".Length);
                     }
-                }
-                else if (child.Name.ToLower() == "ul")
-                {
-                    LoadDirChilds(dir.ChildDirs.Last(), child);
-                }
-                else
-                {
-                    
+                    else if (aNode.InnerText.ToLower().Contains("list of "))
+                    {
+                        newDir.Name = aNode.InnerText.Remove(0, "list of ".Length);
+                    }
+                    else
+                    {
+                        newDir.Name = aNode.InnerText;
+                        dir.UI_Tags.Add(new UI_Tag(aNode.InnerText, aNode.GetAttributeValue("href", null)));
+                    }
+
+                    newDir.Link = aNode.GetAttributeValue("href", null);
+                    dir.UI_Childs.Add(newDir);
                 }
             }
-        }
-
-        private void LoadTagsForDirTree()
-        {
-            foreach (var dir in DirTree)//.Where(x => x.Name.ToLower() == "body"))
+            else if (child.Name.ToLower() == "ul")
             {
-                LoadTagsForDirTree(dir);
-            }
-        }
-
-        private void LoadTagsForDirTree(UI_Dir dir)
-        {
-            if (!string.IsNullOrEmpty(dir.Link))
-            {
-                var wikibody     = GetWikiBody(dir.Link);
-                var nodes        = wikibody.ChildNodes.Where(x => (x.Name.ToLower().StartsWith("h") && x.Name.Length == 2) || x.Name.ToLower() == "ul").ToList();
-                var excludeNode = GetExcludeNode(nodes);
-                while (excludeNode != null)
-                {
-                    var pos    = nodes.IndexOf(excludeNode);
-                    var endpos = pos + 1;
-                    while (endpos < nodes.Count && nodes[endpos].Name.ToLower().StartsWith("h") && nodes[endpos].Name.Length == 2)
-                        endpos++;
-                    while (endpos < nodes.Count && nodes[endpos].Name.ToLower() == "ul")
-                        endpos++;
-                    var cnt = endpos - pos;
-                    for (var i = 0; i < cnt; i++)
-                        nodes.RemoveAt(pos);
-                    excludeNode = GetExcludeNode(nodes);
-                }
-
-                (UI_Dir dir, int level) currentParent = (dir, 0);
-                var parentList    = new List<(UI_Dir dir, int level)> { currentParent };
-                foreach (var node in nodes)
-                {
-                    if (node.Name.ToLower().StartsWith("h"))
-                    {
-                        var level = int.Parse(node.Name.Substring(1, 1));
-                        if (level > currentParent.level)
-                        {
-                            var newDir = new UI_Dir(node.InnerText);
-                            currentParent.dir.ChildDirs.Add(newDir);
-                            parentList.Add((newDir, level));
-                            currentParent = parentList.Last();
-                        }
-                        else if (level == currentParent.level)
-                        {
-                            parentList.Remove(currentParent);
-                            currentParent = parentList.Last();
-                            var newDir = new UI_Dir(node.InnerText);
-                            currentParent.dir.ChildDirs.Add(newDir);
-                            parentList.Add((newDir, level));
-                            currentParent = parentList.Last();
-                        }
-                        else
-                        {
-                            while (level < currentParent.level)
-                            {
-                                parentList.Remove(currentParent);
-                                currentParent = parentList.Last();
-                            }
-                            var newDir = new UI_Dir(node.InnerText);
-                            currentParent.dir.ChildDirs.Add(newDir);
-                            parentList.Add((newDir, level));
-                            currentParent = parentList.Last();
-                        }
-                    }
-                    else if (node.Name.ToLower() == "ul")
-                    {
-                        var lis = node.Descendants("li").Where(x => x.ChildNodes.Any(c => c.Name.ToLower() == "a")).ToList();
-                        foreach (var x in lis)
-                        {
-                            foreach (var c in x.ChildNodes.Where(c => c.Name.ToLower() == "a"))
-                            {
-                                if (!x.InnerText.ToLower().StartsWith("tag group:"))
-                                {
-                                    currentParent.dir.Tags.Add(new Tag(c.InnerText, c.GetAttributeValue("href", null)));
-                                }
-                            }
-                        }
-
-                    }
-                    else throw new Exception();
-                }
-
-                foreach (UI_Dir child in dir.ChildDirs)
-                {
-                    LoadTagsForDirTree(child);
-                }
+                LoadDirChilds(dir.UI_Childs.Last(), child);
             }
             else
             {
-                foreach (UI_Dir child in dir.ChildDirs)
-                {
-                    LoadTagsForDirTree(child);
-                }
             }
-        }
+    }
 
-        public Dir? FindDirByName(string name)
-        {
-            return FindDirByName(name.ToLower(), DirTree.OfType<Dir>().ToList());
-        }
+    private void LoadTagsForDirTree()
+    {
+        foreach (var dir in DirTree) //.Where(x => x.Name.ToLower() == "body"))
+            LoadTagsForDirTree(dir);
+    }
 
-        private Dir? FindDirByName(string name, List<Dir> dirs)
+    private void LoadTagsForDirTree(UI_Dir dir)
+    {
+        if (!string.IsNullOrEmpty(dir.Link))
         {
-            foreach (var dir in dirs)
+            var wikibody    = GetWikiBody(dir.Link);
+            var nodes       = wikibody.ChildNodes.Where(x => (x.Name.ToLower().StartsWith("h") && x.Name.Length == 2) || x.Name.ToLower() == "ul").ToList();
+            var excludeNode = GetExcludeNode(nodes);
+            while (excludeNode != null)
             {
-                if (dir.Name.ToLower() == name) return dir;
-                var ele = FindDirByName(name, dir.ChildDirs.ToList());
-                if (ele != null) return ele;
+                var pos    = nodes.IndexOf(excludeNode);
+                var endpos = pos + 1;
+                while (endpos < nodes.Count && nodes[endpos].Name.ToLower().StartsWith("h") && nodes[endpos].Name.Length == 2)
+                    endpos++;
+                while (endpos < nodes.Count && nodes[endpos].Name.ToLower() == "ul")
+                    endpos++;
+                var cnt = endpos - pos;
+                for (var i = 0; i < cnt; i++)
+                    nodes.RemoveAt(pos);
+                excludeNode = GetExcludeNode(nodes);
             }
 
-            return null;
+            (UI_Dir dir, int level) currentParent = (dir, 0);
+            var                     parentList    = new List<(UI_Dir dir, int level)> {currentParent};
+            foreach (var node in nodes)
+                if (node.Name.ToLower().StartsWith("h"))
+                {
+                    var level = int.Parse(node.Name.Substring(1, 1));
+                    if (level > currentParent.level)
+                    {
+                        var newDir = new UI_Dir(node.InnerText);
+                        currentParent.dir.ChildDirs.Add(newDir);
+                        parentList.Add((newDir, level));
+                        currentParent = parentList.Last();
+                    }
+                    else if (level == currentParent.level)
+                    {
+                        parentList.Remove(currentParent);
+                        currentParent = parentList.Last();
+                        var newDir = new UI_Dir(node.InnerText);
+                        currentParent.dir.ChildDirs.Add(newDir);
+                        parentList.Add((newDir, level));
+                        currentParent = parentList.Last();
+                    }
+                    else
+                    {
+                        while (level < currentParent.level)
+                        {
+                            parentList.Remove(currentParent);
+                            currentParent = parentList.Last();
+                        }
+
+                        var newDir = new UI_Dir(node.InnerText);
+                        currentParent.dir.ChildDirs.Add(newDir);
+                        parentList.Add((newDir, level));
+                        currentParent = parentList.Last();
+                    }
+                }
+                else if (node.Name.ToLower() == "ul")
+                {
+                    var lis = node.Descendants("li").Where(x => x.ChildNodes.Any(c => c.Name.ToLower() == "a")).ToList();
+                    foreach (var x in lis)
+                    foreach (var c in x.ChildNodes.Where(c => c.Name.ToLower() == "a"))
+                        if (!x.InnerText.ToLower().StartsWith("tag group:"))
+                            currentParent.dir.UI_Tags.Add(new UI_Tag(c.InnerText, c.GetAttributeValue("href", null)));
+                }
+                else
+                {
+                    throw new Exception();
+                }
+
+            foreach (var child in dir.UI_Childs) LoadTagsForDirTree(child);
+        }
+        else
+        {
+            foreach (var child in dir.UI_Childs) LoadTagsForDirTree(child);
+        }
+    }
+
+    public UI_Dir? FindDirByName(string name)
+    {
+        return FindDirByName(name.ToLower(), DirTree.ToList());
+    }
+
+    private UI_Dir? FindDirByName(string name, List<UI_Dir> dirs)
+    {
+        foreach (var dir in dirs)
+        {
+            if (dir.Name.ToLower() == name) return dir;
+            var ele = FindDirByName(name, dir.UI_Childs.ToList());
+            if (ele != null) return ele;
         }
 
-        public static string CombineUrl(string path) => $"{BaseAddress.TrimEnd('/')}/{path.TrimStart('/')}";
-        public static HtmlNode? GetExcludeNode(IList<HtmlNode> nodes) => nodes.FirstOrDefault(x => x.Name.ToLower().StartsWith("h") && x.Name.Length == 2 &&
-                                                                                                   (x.InnerText.ToLower() == "related tags" || x.InnerText.ToLower() == "Related tag groups".ToLower() || x.InnerText.ToLower() == "see also" || x.InnerText.ToLower() == "External links".ToLower()));
+        return null;
+    }
+
+    public static string CombineUrl(string path)
+    {
+        return $"{BaseAddress.TrimEnd('/')}/{path.TrimStart('/')}";
+    }
+
+    public static HtmlNode? GetExcludeNode(IList<HtmlNode> nodes)
+    {
+        return nodes.FirstOrDefault(x => x.Name.ToLower().StartsWith("h") && x.Name.Length == 2 &&
+                                         (x.InnerText.ToLower() == "related tags" || x.InnerText.ToLower() == "Related tag groups".ToLower() || x.InnerText.ToLower() == "see also" ||
+                                          x.InnerText.ToLower() == "External links".ToLower()));
     }
 }

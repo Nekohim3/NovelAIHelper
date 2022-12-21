@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +37,22 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
 
         public UI_SessionPart()
         {
-            
+            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+        }
+
+        public UI_SessionPart(string name, string? comment = null) : base(name, comment)
+        {
+            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+        }
+
+        public UI_SessionPart(string name, int idSession, string? comment = null) : base(name, idSession, comment)
+        {
+            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+        }
+
+        private void UI_PartTagsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            PartTags = UI_PartTags.OfType<PartTag>().ToList();
         }
     }
 }

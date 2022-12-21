@@ -44,6 +44,13 @@ public class Tag : IdEntity
         _comment = null;
     }
 
+    public Tag(string name, string? link = null, string? comment = null)
+    {
+        _name    = name;
+        _link    = link;
+        _comment = comment;
+    }
+
     public Tag(string name, int dirId, string? link = null, string? comment = null)
     {
         _name    = name;
@@ -51,14 +58,6 @@ public class Tag : IdEntity
         _link    = link;
         _comment = comment;
     }
-
-    public Tag(string name, string? link = null)
-    {
-        _name    = name;
-        _link    = link;
-        _comment = null;
-    }
-
     
     protected bool Equals(Tag tag)
     {
