@@ -35,7 +35,7 @@ public class Tag : IdEntity
     public                               int IdDir { get; set; }
     [ForeignKey("IdDir")] public virtual Dir Dir   { get; set; }
 
-    public virtual ICollection<PartTag> SessionTags { get; set; } = new List<PartTag>();
+    public virtual ICollection<GroupTag> SessionTags { get; set; } = new List<GroupTag>();
 
     public Tag()
     {

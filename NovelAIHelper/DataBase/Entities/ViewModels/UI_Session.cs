@@ -15,11 +15,11 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels;
 
 public class UI_Session : Session, ISelected
 {
-    private ObservableCollectionWithSelectedItem<UI_SessionPart> _uI_SessionParts = new();
-    public ObservableCollectionWithSelectedItem<UI_SessionPart> UI_SessionParts
+    private ObservableCollectionWithSelectedItem<UI_Group> _uI_SessionGroups = new();
+    public ObservableCollectionWithSelectedItem<UI_Group> UI_SessionGroups
     {
-        get => _uI_SessionParts;
-        set => this.RaiseAndSetIfChanged(ref _uI_SessionParts, value);
+        get => _uI_SessionGroups;
+        set => this.RaiseAndSetIfChanged(ref _uI_SessionGroups, value);
     }
 
     private bool _isSelected;
@@ -31,16 +31,16 @@ public class UI_Session : Session, ISelected
 
     public UI_Session()
     {
-        UI_SessionParts.CollectionChanged += UI_SessionPartsOnCollectionChanged;
+        UI_SessionGroups.CollectionChanged += UI_SessionPartsOnCollectionChanged;
     }
 
     public UI_Session(string name, string? comment = null) : base(name, comment)
     {
-        UI_SessionParts.CollectionChanged += UI_SessionPartsOnCollectionChanged;
+        UI_SessionGroups.CollectionChanged += UI_SessionPartsOnCollectionChanged;
     }
 
     private void UI_SessionPartsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Parts = UI_SessionParts.OfType<SessionPart>().ToList();
+        Groups = UI_SessionGroups.OfType<Group>().ToList();
     }
 }

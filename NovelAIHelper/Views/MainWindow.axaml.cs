@@ -23,7 +23,7 @@ public partial class MainWindow : Window
     private bool      _captured = false;
     private bool      _isDrag   = false;
     private UI_Tag?   _tag;
-    private TagGroup? _tagGroup;
+    private UI_Group? _group;
 
     private DragObject _dragObject;
 
@@ -42,16 +42,18 @@ public partial class MainWindow : Window
                 _startPos   = new Point(e.GetPosition(this));
                 _captured   = true;
                 _tag        = tagGrid.DataContext as UI_Tag;
-                _tagGroup   = tagCtrl.DataContext as TagGroup;
+                _group   = tagCtrl.DataContext as UI_Group;
                 _dragObject = DragObject.Tag;
             }
             else
             {
                 var res = await MessageBoxManager
-                                .GetMessageBoxStandardWindow("", $"Remove tag: \"{_tagGroup.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                                .GetMessageBoxStandardWindow("", $"Remove tag: \"{_group.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
+                    //var vm = (DataContext as MainWindowViewModel).TagTree.Sessions.SelectedItem;
+                    //vm.UI_SessionParts.Remove(_sessionPart);
                     //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
                     //vm.TagGrid.Remove(_tagGroup);
                 }
@@ -61,18 +63,19 @@ public partial class MainWindow : Window
         {
             if (e.KeyModifiers == KeyModifiers.None)
             {
-                _startPos   = new Point(e.GetPosition(this));
-                _captured   = true;
-                _tagGroup   = groupTagGrid.DataContext as TagGroup;
-                _dragObject = DragObject.Group;
+                _startPos    = new Point(e.GetPosition(this));
+                _captured    = true;
+                _group = groupTagGrid.DataContext as UI_Group;
+                _dragObject  = DragObject.Group;
             }
             else if (e.KeyModifiers == KeyModifiers.Control)
             {
                 var res = await MessageBoxManager
-                                .GetMessageBoxStandardWindow("", $"Remove tag group: \"{_tagGroup.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                                .GetMessageBoxStandardWindow("", $"Remove tag group: \"{_group.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
+                    //var vm = (DataContext as MainWindowViewModel).TagTree.Sessions.SelectedItem;
                     //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
                     //vm.TagGrid.Remove((groupTagGrid.DataContext as TagGroup));
                 }
@@ -83,7 +86,7 @@ public partial class MainWindow : Window
             _startPos   = new Point(e.GetPosition(this));
             _captured   = true;
             _tag        = grid.DataContext as UI_Tag;
-            _tagGroup   = null;
+            _group   = null;
             _dragObject = DragObject.SearchedTag;
         }
     }
@@ -93,33 +96,32 @@ public partial class MainWindow : Window
         if (!_isDrag && _captured && _startPos.Far(e.GetPosition(this)))
         {
             _isDrag = true;
-            //var vm       = (DataContext as MainWindowViewModel).TagGroupVM;
             var dragData = new DataObject();
             if (_dragObject == DragObject.Tag)
             {
                 if (_tag == null) return;
                 dragData.Set("NovelAIHelper.UI_Tag", "");
-                //vm.DragStart(_tagGroup, _tag, _dragObject);
+                g.TagTree.DragStart(_group, _tag, _dragObject);
             }
             else if (_dragObject == DragObject.Group)
             {
-                if (_tagGroup == null) return;
+                if (_group == null) return;
                 dragData.Set("NovelAIHelper.TagGroup", "");
-                //vm.DragStart(_tagGroup, _dragObject);
+                g.TagTree.DragStart(_group, _dragObject);
             }
             else if (_dragObject == DragObject.SearchedTag)
             {
                 if (_tag == null) return;
                 dragData.Set("NovelAIHelper.UI_Tag", "");
-                //vm.DragStart(_tagGroup, _tag, _dragObject);
+                g.TagTree.DragStart(_group, _tag, _dragObject);
             }
 
             await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
-            //vm.DragEnd();
+            g.TagTree.DragEnd();
             _isDrag   = false;
             _captured = false;
             _tag      = null;
-            _tagGroup = null;
+            _group    = null;
         }
     }
 
@@ -131,8 +133,7 @@ public partial class MainWindow : Window
             if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
             {
                 e.DragEffects = DragDropEffects.Move;
-                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                //vm.DragOver(tagCtrl.DataContext as TagGroup, tagGrid.DataContext as UI_Tag);
+                g.TagTree.DragOver(tagCtrl.DataContext as UI_Group, tagGrid.DataContext as UI_Tag);
             }
             else
             {
@@ -144,8 +145,7 @@ public partial class MainWindow : Window
             if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
             {
                 e.DragEffects = DragDropEffects.Move;
-                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                //vm.DragOver(panel.DataContext as TagGroup);
+                g.TagTree.DragOver(panel.DataContext as UI_Group);
             }
             else
             {
@@ -157,8 +157,7 @@ public partial class MainWindow : Window
             if (_dragObject == DragObject.Group)
             {
                 e.DragEffects = DragDropEffects.Move;
-                //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                //vm.DragOver(groupTagGrid.DataContext as TagGroup);
+                g.TagTree.DragOver(groupTagGrid.DataContext as UI_Group);
             }
             else
             {

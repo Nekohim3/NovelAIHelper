@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
 {
-    public class UI_PartTag : PartTag, ISelected
+    public class UI_GroupTag : GroupTag, ISelected
     {
         private bool _isSelected;
         public bool IsSelected
@@ -31,19 +31,24 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             }
         }
 
-        public UI_PartTag()
+        public UI_GroupTag()
         {
 
         }
 
-        public UI_PartTag(int order, int strength) : base(order, strength)
+        public UI_GroupTag(int order = 0, int strength = 0) : base(order, strength)
         {
 
         }
 
-        public UI_PartTag(int idTag, int order, int strength) : base(idTag, order, strength)
+        public UI_GroupTag(int idTag, int order = 0, int strength = 0) : base(idTag, order, strength)
         {
-            
+
+        }
+
+        public UI_GroupTag(UI_Tag tag, int order = 0, int strength = 0) : base(tag, order, strength)
+        {
+            UI_Tag = tag;
         }
     }
 }

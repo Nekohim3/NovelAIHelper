@@ -22,18 +22,18 @@ namespace NovelAIHelper
 
         public override void OnFrameworkInitializationCompleted()
         {
-            g.ResetCtx(true);
-            var dir  = new UI_Dir("testdir");
-            var tag1 = new UI_Tag("1");
-            var tag2 = new UI_Tag("2");
-            var tag3 = new UI_Tag("3");
-            dir.UI_Tags.AddRange(new List<UI_Tag> {tag1, tag2, tag3});
-            dir.Save();
-            dir.UI_Tags.RemoveAt(0);
-            dir.Save();
-            //g.ResetCtx();
-            dir.UI_Tags[0].Name = tag1.Name;
-            dir.Save();
+            //g.ResetCtx(true);
+            //var dir  = new UI_Dir("testdir");
+            //var tag1 = new UI_Tag("1");
+            //var tag2 = new UI_Tag("2");
+            //var tag3 = new UI_Tag("3");
+            //dir.UI_Tags.AddRange(new List<UI_Tag> {tag1, tag2, tag3});
+            //dir.Save();
+            //dir.UI_Tags.RemoveAt(0);
+            //dir.Save();
+            ////g.ResetCtx();
+            //dir.UI_Tags[0].Name = tag1.Name;
+            //dir.Save();
 
 
             //new DirService().Save(dir);

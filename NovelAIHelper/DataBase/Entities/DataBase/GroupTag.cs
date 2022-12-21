@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Avalonia.Animation;
 using NovelAIHelper.ViewModels;
 using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.DataBase;
 
-public class PartTag : IdEntity
+public class GroupTag : IdEntity
 {
     private int _order;
     public int Order
@@ -26,44 +27,44 @@ public class PartTag : IdEntity
         set => this.RaiseAndSetIfChanged(ref _strength, value);
     }
 
-    public                                int         IdPart { get; set; }
-    [ForeignKey("IdPart")] public virtual SessionPart Part   { get; set; }
+    public                                int   IdGroup { get; set; }
+    [ForeignKey("IdPart")] public virtual Group Group   { get; set; }
 
     public                               int IdTag { get; set; }
     [ForeignKey("IdTag")] public virtual Tag Tag   { get; set; }
 
-    public PartTag()
+    public GroupTag()
     {
         _order    = 0;
         _strength = 0;
     }
 
-    public PartTag(int order, int strength)
+    public GroupTag(int order = 0, int strength = 0)
     {
         _order    = order;
         _strength = strength;
     }
 
-    //public PartTag(Tag tag, int order, int strength)
-    //{
-    //    _order    = order;
-    //    _strength = strength;
-    //    Tag       = tag;
-    //    IdTag     = tag.Id;
-    //}
+    public GroupTag(Tag tag, int order = 0, int strength = 0)
+    {
+        _order = order;
+        _strength = strength;
+        Tag = tag;
+        IdTag = tag.Id;
+    }
 
-    public PartTag(int idTag, int order, int strength)
+    public GroupTag(int idTag, int order = 0, int strength = 0)
     {
         _order    = order;
         _strength = strength;
         IdTag     = idTag;
     }
 
-    protected bool Equals(PartTag partTag)
+    protected bool Equals(GroupTag groupTag)
     {
-        var eq = base.Equals(partTag);
+        var eq = base.Equals(groupTag);
         if (!eq)
-            return partTag.Order == Order && partTag.Strength == Order;
+            return groupTag.Order == Order && groupTag.Strength == Order;
         return false;
     }
 

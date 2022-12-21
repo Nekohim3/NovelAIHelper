@@ -12,7 +12,7 @@ using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.ViewModels
 {
-    public class UI_SessionPart : SessionPart, ISelected
+    public class UI_Group : Group, ISelected
     {
         private bool _isSelected;
         public bool IsSelected
@@ -21,11 +21,11 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isSelected, value);
         }
 
-        private ObservableCollectionWithSelectedItem<UI_PartTag> _uI_PartTags = new();
-        public ObservableCollectionWithSelectedItem<UI_PartTag> UI_PartTags
+        private ObservableCollectionWithSelectedItem<UI_GroupTag> _uI_GroupTags = new();
+        public ObservableCollectionWithSelectedItem<UI_GroupTag> UI_GroupTags
         {
-            get => _uI_PartTags;
-            set => this.RaiseAndSetIfChanged(ref _uI_PartTags, value);
+            get => _uI_GroupTags;
+            set => this.RaiseAndSetIfChanged(ref _uI_GroupTags, value);
         }
 
         private UI_Session _uI_Session;
@@ -35,24 +35,24 @@ namespace NovelAIHelper.DataBase.Entities.ViewModels
             set => this.RaiseAndSetIfChanged(ref _uI_Session, value);
         }
 
-        public UI_SessionPart()
+        public UI_Group()
         {
-            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+            UI_GroupTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
         }
 
-        public UI_SessionPart(string name, string? comment = null) : base(name, comment)
+        public UI_Group(string name, int order = 0, string? comment = null) : base(name, order, comment)
         {
-            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+            UI_GroupTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
         }
 
-        public UI_SessionPart(string name, int idSession, string? comment = null) : base(name, idSession, comment)
+        public UI_Group(string name, int idSession, int order = 0, string? comment = null) : base(name, idSession, order, comment)
         {
-            UI_PartTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
+            UI_GroupTags.CollectionChanged += UI_PartTagsOnCollectionChanged;
         }
 
         private void UI_PartTagsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            PartTags = UI_PartTags.OfType<PartTag>().ToList();
+            GroupTags = UI_GroupTags.OfType<GroupTag>().ToList();
         }
     }
 }

@@ -13,8 +13,8 @@ namespace NovelAIHelper.DataBase
         public DbSet<Dir>         Dirs         { get; set; }
         public DbSet<Tag>         Tags         { get; set; }
         public DbSet<Session>     Sessions     { get; set; }
-        public DbSet<SessionPart> SessionParts { get; set; }
-        public DbSet<PartTag>     PartTags     { get; set; }
+        public DbSet<Group> SessionParts { get; set; }
+        public DbSet<GroupTag>     PartTags     { get; set; }
 
         public TagContext(bool resetDatabase = false)
         {

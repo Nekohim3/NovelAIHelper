@@ -66,12 +66,6 @@ public class UI_Dir : Dir, ISelected, IExpanded
         UI_Tags.CollectionChanged    += UI_TagsOnCollectionChanged;
     }
 
-    public UI_Dir(string name, int? parentId = null, string? link = null) : base(name, parentId, link)
-    {
-        _ui_Childs.CollectionChanged += Ui_ChildsOnCollectionChanged;
-        UI_Tags.CollectionChanged    += UI_TagsOnCollectionChanged;
-    }
-
     public UI_Dir(string name, int? parentId = null, string? link = null, string? comment = null) : base(name, parentId, link, comment)
     {
         _ui_Childs.CollectionChanged += Ui_ChildsOnCollectionChanged;

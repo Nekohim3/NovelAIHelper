@@ -12,7 +12,7 @@ using HarfBuzzSharp;
 
 namespace NovelAIHelper.DataBase.Services
 {
-    public class SessionPartService : TService<SessionPart, UI_SessionPart>
+    public class SessionPartService : TService<Group, UI_Group>
     {
         //public SessionTagService()
         //{

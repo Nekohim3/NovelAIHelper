@@ -9,13 +9,21 @@ using ReactiveUI;
 
 namespace NovelAIHelper.DataBase.Entities.DataBase;
 
-public class SessionPart : IdEntity
+public class Group : IdEntity
 {
     private string _name;
     public string Name
     {
         get => _name;
         set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
+
+    private int _order;
+
+    public int Order
+    {
+        get => _order;
+        set => this.RaiseAndSetIfChanged(ref _order, value);
     }
 
     private string? _comment;
@@ -28,28 +36,30 @@ public class SessionPart : IdEntity
     public                                   int     IdSession { get; set; }
     [ForeignKey("IdSession")] public virtual Session Session   { get; set; }
 
-    public virtual ICollection<PartTag> PartTags { get; set; } = new List<PartTag>();
+    public virtual ICollection<GroupTag> GroupTags { get; set; } = new List<GroupTag>();
 
-    public SessionPart()
+    public Group()
     {
         _name    = "";
         _comment = null;
     }
 
-    public SessionPart(string name, string? comment = null)
+    public Group(string name, int order = 0, string? comment = null)
     {
-        _name     = name;
-        _comment  = comment;
+        _name    = name;
+        _comment = comment;
+        _order   = order;
     }
 
-    public SessionPart(string name, int idSession, string? comment = null)
+    public Group(string name, int idSession, int order = 0, string? comment = null)
     {
         _name     = name;
         IdSession = idSession;
         _comment  = comment;
+        _order = order;
     }
 
-    protected bool Equals(SessionPart sessionPart)
+    protected bool Equals(Group sessionPart)
     {
         var eq = base.Equals(sessionPart);
         if (!eq)

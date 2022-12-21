@@ -16,13 +16,19 @@ public static class g
 
     public static TagContext Ctx { get; set; }
 
+    public static TagTree TagTree { get; set; }
+
     public static void ResetCtx(bool reset = false)
     {
         if (Ctx != null) Ctx.Dispose();
         Ctx = new TagContext(reset);
     }
 
-    static g() { Ctx = new TagContext(); }
+    static g()
+    {
+        Ctx     = new TagContext();
+        TagTree = new TagTree();
+    }
 
     public static MapperConfiguration? GetMap<T>() where T : IdEntity
     {

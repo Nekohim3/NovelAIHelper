@@ -3,6 +3,7 @@
         xmlns:vm="using:NovelAIHelper.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:novelAiHelper="clr-namespace:NovelAIHelper"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
         x:Class="NovelAIHelper.Views.MainWindow" WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
@@ -23,7 +24,7 @@
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto">
                 <ToggleButton Classes="NotTreeView" Grid.Column="0" Content="ShowTree" />
-                <TextBox Grid.Column="1" Text="{Binding TagTree.SearchString}" Margin="0" />
+                <TextBox Grid.Column="1" Text="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=SearchString}" Margin="0" />
                 <!--<TextBox Grid.Column="1" Text="{Binding TagTree.SearchString}" IsVisible="False" />
                 <TextBox Grid.Column="2" Text="{Binding TagTree.SearchString}" IsVisible="False" Width="200" />-->
             </Grid>
@@ -35,7 +36,7 @@
         </Grid>
         <Grid Grid.Row="1" Grid.Column="1" Background="#33000000" />
         <Grid Grid.Row="1" Column="0">
-            <ListBox Items="{Binding TagTree.SearchedTags}" Width="200"
+            <ListBox Items="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=SearchedTags}" Width="200"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.AllowAutoHide="True">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -51,7 +52,7 @@
         <Grid Grid.Row="1" Grid.Column="1">
             <Border BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
                 <Grid>
-                    <ItemsControl Items="{Binding TagTree.Sessions.SelectedItem.UI_SessionParts}">
+                    <ItemsControl Items="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=Sessions.SelectedItem.UI_SessionGroups}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel />
@@ -68,7 +69,7 @@
                                                        FontWeight="Bold" FontSize="14" IsHitTestVisible="False"
                                                        Height="24" />
                                         </Grid>
-                                        <ItemsControl Grid.Column="1" Items="{Binding UI_PartTags}">
+                                        <ItemsControl Grid.Column="1" Items="{Binding UI_GroupTags}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
                                                     <WrapPanel Orientation="Horizontal" Background="#01000000"

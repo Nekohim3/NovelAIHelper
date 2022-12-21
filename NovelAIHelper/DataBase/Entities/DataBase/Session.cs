@@ -27,7 +27,7 @@ namespace NovelAIHelper.DataBase.Entities.DataBase
             set => this.RaiseAndSetIfChanged(ref _comment, value);
         }
         
-        public virtual ICollection<SessionPart> Parts { get; set; } = new List<SessionPart>();
+        public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
         public Session()
         {

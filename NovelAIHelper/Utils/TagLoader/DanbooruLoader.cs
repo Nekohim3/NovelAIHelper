@@ -29,10 +29,9 @@ internal class DanbooruLoader
 
     public void DownloadAll()
     {
-        var loader = new DanbooruLoader();
-        DirTree = loader.DownloadDirs().ToList();
+        DirTree = DownloadDirs().ToList();
         LoadTagsForDirTree();
-        var saved = loader.SaveDirs(DirTree);
+        var saved = SaveDirs(DirTree);
     }
 
     private HtmlNode GetWikiBody(string path)
