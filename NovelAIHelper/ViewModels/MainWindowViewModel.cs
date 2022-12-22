@@ -12,230 +12,192 @@ using NovelAIHelper.Utils;
 using NovelAIHelper.Utils.Collections;
 using NovelAIHelper.Views;
 using System.Collections;
+using System.Reactive.Linq;
 using System.Runtime.Intrinsics.X86;
 using NovelAIHelper.DataBase.Services;
 using NovelAIHelper.Utils.DragHelpers;
+using MessageBox.Avalonia.Enums;
+using MessageBox.Avalonia;
 
-namespace NovelAIHelper.ViewModels
+namespace NovelAIHelper.ViewModels;
+
+public class MainWindowViewModel : ViewModelBase
 {
-    public class MainWindowViewModel : ViewModelBase
+    private Window _wnd;
+
+    public ReactiveCommand<Unit, Unit> TagEditorShowCmd { get; }
+
+    public ReactiveCommand<Unit, Unit> GroupAddCmd    { get; }
+    public ReactiveCommand<Unit, Unit> GroupSaveCmd   { get; }
+    public ReactiveCommand<Unit, Unit> GroupCancelCmd { get; }
+
+    public ReactiveCommand<Unit, Unit> SessionAddCmd    { get; }
+    public ReactiveCommand<Unit, Unit> SessionEditCmd   { get; }
+    public ReactiveCommand<Unit, Unit> SessionRemoveCmd { get; }
+    public ReactiveCommand<Unit, Unit> SessionSaveCmd   { get; }
+    public ReactiveCommand<Unit, Unit> SessionCancelCmd { get; }
+
+    private bool _sessionsOpen;
+    public bool SessionsOpen
     {
-        private Window                      _wnd;
-        public  ReactiveCommand<Unit, Unit> TagEditorShowCmd { get; }
-
-        //private TagTree _tagTree = new();
-
-        //public TagTree TagTree
-        //{
-        //    get => _tagTree;
-        //    set => this.RaiseAndSetIfChanged(ref _tagTree, value);
-        //}
-
-        //private ObservableCollectionWithSelectedItem<UI_Tag> _firstList;
-
-        //public ObservableCollectionWithSelectedItem<UI_Tag> FirstList
-        //{
-        //    get => _firstList;
-        //    set => this.RaiseAndSetIfChanged(ref _firstList, value);
-        //}
-
-        //private ObservableCollectionWithSelectedItem<UI_Tag> _secondList;
-
-        //public ObservableCollectionWithSelectedItem<UI_Tag> SecondList
-        //{
-        //    get => _secondList;
-        //    set => this.RaiseAndSetIfChanged(ref _secondList, value);
-        //}
-
-        //private ObservableCollectionWithSelectedItem<UI_Tag> _thirdList;
-
-        //public ObservableCollectionWithSelectedItem<UI_Tag> ThirdList
-        //{
-        //    get => _thirdList;
-        //    set => this.RaiseAndSetIfChanged(ref _thirdList, value);
-        //}
-        
-        //private UI_Tag _draggedTag;
-
-        //public UI_Tag DraggedTag
-        //{
-        //    get => _draggedTag;
-        //    set => this.RaiseAndSetIfChanged(ref _draggedTag, value);
-        //}
-
-        //private ObservableCollectionWithSelectedItem<UI_Tag> _sourceDragList;
-
-        //public ObservableCollectionWithSelectedItem<UI_Tag> SourceDragList
-        //{
-        //    get => _sourceDragList;
-        //    set => this.RaiseAndSetIfChanged(ref _sourceDragList, value);
-        //}
-
-        //private UI_SessionPart? _sourceDragGroup;
-
-        //public UI_SessionPart? SourceDragGroup
-        //{
-        //    get => _sourceDragGroup;
-        //    set => this.RaiseAndSetIfChanged(ref _sourceDragGroup, value);
-        //}
-
-        //private UI_SessionPart? _lastGroup;
-
-        //public UI_SessionPart? LastGroup
-        //{
-        //    get => _lastGroup;
-        //    set => this.RaiseAndSetIfChanged(ref _lastGroup, value);
-        //}
-
-
-        //private DragObject _dragObject;
-
-        //private TagGridViewModel _tagGroupVM;
-
-        //public TagGridViewModel TagGroupVM
-        //{
-        //    get => _tagGroupVM;
-        //    set => this.RaiseAndSetIfChanged(ref _tagGroupVM, value);
-        //}
-
-        public ReactiveCommand<Unit, Unit> AddGroupCmd { get; }
-        public ReactiveCommand<Unit, Unit> CancelGroupCmd        { get; }
-        
-        public MainWindowViewModel()
-        {
-        }
-
-        public MainWindowViewModel(Window wnd)
-        {
-            //var sess = new UI_Session();
-            //sess.Name        = "qwe";
-            //sess.Comment     = "asd";
-            //sess.Save();
-            //sess.Name        = "123";
-            //sess.Save();
-            AddGroupCmd      = ReactiveCommand.Create(OnAddGroup);
-            CancelGroupCmd   = ReactiveCommand.Create(OnCancelGroup);
-            _wnd             = wnd;
-            TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
-            //_firstList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(10000, 10));
-            //_secondList      = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(20000, 10));
-            //_thirdList       = new ObservableCollectionWithSelectedItem<UI_Tag>(TagTree.GetRange(30000, 10));
-            //TagGroupVM = new TagGridViewModel(new ObservableCollectionWithSelectedItem<TagGroup>(
-            //                                                                                     new List<TagGroup>
-            //                                                                                     {
-            //                                                                                         //new(_firstList, "Тело"),
-            //                                                                                         //new(_secondList, "Одежда"),
-            //                                                                                         //new(_thirdList, "Поза"),
-
-            //                                                                                     }
-            //                                                                                    ));
-        }
-
-        private void OnTagEditorShow()
-        {
-            var f = new TagEditorView();
-            f.DataContext = new TagEditorViewModel(f);
-            f.Show(_wnd);
-            f.Closed += (_, _) =>
-                        {
-                            f.DataContext = null;
-                            g.TagTree       = new TagTree();
-                            GC.Collect();
-                        };
-        }
-
-        private void OnAddGroup()
-        {
-
-        }
-
-        private void OnCancelGroup()
-        {
-
-        }
-
-        //public void DragStart(UI_SessionPart? group, UI_Tag tag, DragObject dragObject)
-        //{
-        //    SourceDragGroup = group;
-        //    DraggedTag = tag;
-        //    LastGroup = SourceDragGroup;
-        //    DraggedTag.IsDrag = true;
-        //    _dragObject = dragObject;
-        //}
-
-        //public void DragStart(UI_SessionPart group, DragObject dragObject)
-        //{
-        //    SourceDragGroup = group;
-        //    _dragObject = dragObject;
-        //}
-
-        //public void DragEnd()
-        //{
-        //    SourceDragGroup = null;
-        //    if (DraggedTag == null) return;
-        //    DraggedTag.IsDrag = false;
-        //    DraggedTag = null;
-        //}
-
-        //public void DragOver(UI_SessionPart? group, UI_Tag? tag = null)
-        //{
-        //    if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
-        //    {
-        //        if (DraggedTag == null) return;
-        //        if (group == null) return;
-        //        if (tag == null)
-        //        {
-        //            if (LastGroup == null)
-        //            {
-        //                LastGroup = group;
-        //                if (group.UI_PartTags.Count(x => x.UI_Tag == DraggedTag) == 0)
-        //                    group.UI_PartTags.Add(new UI_PartTag(DraggedTag, group.UI_PartTags.Count + 1));
-        //            }
-        //            else
-        //            {
-        //                if (LastGroup != group)
-        //                {
-        //                    foreach (var x in TagTree.Sessions.SelectedItem.UI_SessionParts)
-        //                        x.UI_PartTags.Remove(x.UI_PartTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
-        //                    LastGroup = group;
-        //                    group.UI_PartTags.Add(new UI_PartTag(DraggedTag, group.UI_PartTags.Count + 1));
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (DraggedTag == tag) return;
-        //            if (LastGroup == null)
-        //            {
-        //                foreach (var x in TagTree.Sessions.SelectedItem.UI_SessionParts)
-        //                    x.UI_PartTags.Remove(x.UI_PartTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
-        //                LastGroup = group;
-        //                if (group.UI_PartTags.Count(x => x.UI_Tag == DraggedTag) == 0)
-        //                    group.UI_PartTags.Add(new UI_PartTag(DraggedTag, group.UI_PartTags.Count + 1));
-        //            }
-        //            else if (LastGroup == group)
-        //            {
-        //                if (group.UI_PartTags.Count(x => x.UI_Tag == DraggedTag) == 0)
-        //                    group.UI_PartTags.Insert(group.UI_PartTags.IndexOf(group.UI_PartTags.FirstOrDefault(x => x.IdTag == tag.Id)), new UI_PartTag(DraggedTag, group.UI_PartTags.Count + 1));
-        //                else
-        //                    group.UI_PartTags.Move(group.UI_PartTags.IndexOf(group.UI_PartTags.FirstOrDefault(x => x.IdTag == DraggedTag.Id)), group.UI_PartTags.IndexOf(group.UI_PartTags.FirstOrDefault(x => x.IdTag == tag.Id)));
-        //            }
-        //            else
-        //            {
-        //                foreach (var x in TagTree.Sessions.SelectedItem.UI_SessionParts)
-        //                    x.UI_PartTags.Remove(x.UI_PartTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
-        //                LastGroup = group;
-        //                group.UI_PartTags.Insert(group.UI_PartTags.IndexOf(group.UI_PartTags.FirstOrDefault(x => x.IdTag == tag.Id)), group.UI_PartTags.FirstOrDefault(x => x.IdTag == DraggedTag.Id));
-        //            }
-        //        }
-        //    }
-        //    else if (_dragObject == DragObject.Group)
-        //    {
-        //        if (group == null || SourceDragGroup == null) return;
-        //        if (SourceDragGroup != group)
-        //            TagTree.Sessions.SelectedItem.UI_SessionParts.Move(TagTree.Sessions.SelectedItem.UI_SessionParts.IndexOf(SourceDragGroup), TagTree.Sessions.SelectedItem.UI_SessionParts.IndexOf(group));
-        //    }
-        //}
+        get => _sessionsOpen;
+        set => this.RaiseAndSetIfChanged(ref _sessionsOpen, value);
     }
-}
 
+    private bool _groupEditMode;
+    public bool GroupEditMode
+    {
+        get => _groupEditMode;
+        set => this.RaiseAndSetIfChanged(ref _groupEditMode, value);
+    }
+
+    private UI_Group? _currentGroup;
+    public UI_Group? CurrentGroup
+    {
+        get => _currentGroup;
+        set => this.RaiseAndSetIfChanged(ref _currentGroup, value);
+    }
+
+    private UI_Session? _currentSession;
+    public UI_Session? CurrentSession
+    {
+        get => _currentSession;
+        set => this.RaiseAndSetIfChanged(ref _currentSession, value);
+    }
+
+    private bool _sessionEditMode;
+    public bool SessionEditMode
+    {
+        get => _sessionEditMode;
+        set => this.RaiseAndSetIfChanged(ref _sessionEditMode, value);
+    }
+
+    public MainWindowViewModel()
+    {
+    }
+
+    public MainWindowViewModel(Window wnd)
+    {
+        _wnd = wnd;
+
+        GroupAddCmd      = ReactiveCommand.Create(OnGroupAdd);
+        GroupSaveCmd     = ReactiveCommand.Create(OnGroupSave);
+        GroupCancelCmd   = ReactiveCommand.Create(OnGroupCancel);
+        TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
+
+        SessionAddCmd    = ReactiveCommand.Create(OnSessionAdd);
+        SessionEditCmd   = ReactiveCommand.Create(OnSessionEdit);
+        SessionRemoveCmd = ReactiveCommand.Create(OnSessionRemove);
+        SessionSaveCmd   = ReactiveCommand.Create(OnSessionSave);
+        SessionCancelCmd = ReactiveCommand.Create(OnSessionCancel);
+    }
+
+    private void OnTagEditorShow()
+    {
+        var f = new TagEditorView();
+        f.DataContext = new TagEditorViewModel(f);
+        f.Show(_wnd);
+        f.Closed += (_, _) =>
+                    {
+                        f.DataContext = null;
+                        g.TagTree     = new TagTree();
+                        GC.Collect();
+                        GC.Collect();
+                        GC.Collect();
+                        GC.Collect();
+                    };
+    }
+
+    private void OnGroupAdd()
+    {
+        CurrentGroup  = new UI_Group();
+        GroupEditMode = true;
+    }
+
+    public void OnGroupEdit(UI_Group group)
+    {
+    }
+
+    public void OnGroupDelete(UI_Group group)
+    {
+    }
+
+    private void OnGroupSave()
+    {
+        if (!GroupEditMode)
+            return;
+        if (CurrentGroup == null)
+            return;
+        if (string.IsNullOrEmpty(CurrentGroup.Name))
+            return;
+        bool saved = false;
+        if (CurrentGroup.Id == 0)
+        {
+            g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Add(CurrentGroup);
+            saved = g.TagTree.Sessions.SelectedItem.Save();
+        }
+        else
+        {
+            saved = CurrentGroup.Save();
+        }
+        if (!saved)
+            MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save group failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
+
+        CurrentGroup  = null;
+        GroupEditMode = false;
+    }
+
+    private void OnGroupCancel()
+    {
+        CurrentGroup  = null;
+        GroupEditMode = false;
+    }
+
+    #region SessionCmdExec
+
+    private void OnSessionAdd()
+    {
+        SessionEditMode = true;
+        CurrentSession  = new UI_Session();
+    }
+
+    private void OnSessionEdit()
+    {
+        if(g.TagTree.Sessions.SelectedItem == null) return;
+        SessionEditMode = true;
+        CurrentSession  = g.TagTree.Sessions.SelectedItem.GetCopy();
+    }
+
+    private void OnSessionRemove()
+    {
+    }
+
+    private void OnSessionSave()
+    {
+        if(CurrentSession == null) return;
+        if(string.IsNullOrEmpty(CurrentSession.Name)) return;
+        var saved = false;
+        if (CurrentSession.Id == 0)
+        {
+            saved = CurrentSession.Save();
+        }
+        else
+        {
+            CurrentSession.CopyTo(g.TagTree.Sessions.SelectedItem);
+            if(g.TagTree.Sessions.SelectedItem)
+            saved = g.TagTree.Sessions.SelectedItem.Save();
+        }
+        if(!saved)
+            MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save session failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
+        CurrentSession  = null;
+        SessionEditMode = false;
+    }
+
+    private void OnSessionCancel()
+    {
+        CurrentSession  = null;
+        SessionEditMode = false;
+    }
+
+    #endregion
+}

@@ -32,7 +32,7 @@
         <Grid Grid.Row="0" Grid.Column="1" Height="24" ColumnDefinitions="Auto,*, Auto,Auto">
             <Button Grid.Column="0" Content="Add group" Command="{Binding TagEditorShowCmd}" />
             <Button Grid.Column="2" Content="Tags editor" Command="{Binding TagEditorShowCmd}" />
-            <Button Grid.Column="3" Content="Settings" />
+            <ToggleButton Classes="NotTreeView" Grid.Column="3" Content="Sessions" IsChecked="{Binding SessionsOpen}"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="1" Background="#33000000" />
         <Grid Grid.Row="1" Column="0">
@@ -49,8 +49,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1">
-            <Border BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*, Auto">
+            <Border Grid.Column="0" BorderBrush="#ff555555" BorderThickness="0,1,0,0" Padding="0,1,0,0">
                 <Grid>
                     <ItemsControl Items="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=Sessions.SelectedItem.UI_SessionGroups}">
                         <ItemsControl.ItemsPanel>
@@ -111,12 +111,32 @@
                     </ItemsControl>
                 </Grid>
             </Border>
+              <Grid Grid.Column="1" RowDefinitions="*, Auto,Auto,Auto,Auto,Auto,Auto, Auto" Background="#ff222222" IsVisible="{Binding SessionsOpen}">
+                  <ListBox Grid.Row="0" Items="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=Sessions}" SelectedItem="{Binding Source={x:Static novelAiHelper:g.TagTree}, Path=Sessions.SelectedItem}"
+                           ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.AllowAutoHide="True" Width="200">
+                      <ListBox.ItemTemplate>
+                          <DataTemplate>
+                              <Grid Background="#01000000" ToolTip.Tip="{Binding Comment}">
+                                  <TextBlock Text="{Binding Name}"/>
+                              </Grid>
+                          </DataTemplate>
+                      </ListBox.ItemTemplate>
+                  </ListBox>
+                  <TextBox Grid.Row="1" Height="24" Text="{Binding CurrentSession.Name}" IsVisible="{Binding SessionEditMode}"/>
+                  <TextBox Grid.Row="2" Height="100" Text="{Binding CurrentSession.Comment}" AcceptsReturn="True" VerticalContentAlignment="Top" IsVisible="{Binding SessionEditMode}"/>
+                  <Button Grid.Row="3" Content="Add new" IsVisible="{Binding !SessionEditMode}" Command="{Binding SessionAddCmd}"/>
+                  <Button Grid.Row="4" Content="Edit" IsVisible="{Binding !SessionEditMode}" Command="{Binding SessionEditCmd}"/>
+                  <Button Grid.Row="5" Content="Remove" IsVisible="{Binding !SessionEditMode}" Command="{Binding SessionRemoveCmd}"/>
+                  <Button Grid.Row="6" Content="Save" IsVisible="{Binding SessionEditMode}" Command="{Binding SessionSaveCmd}"/>
+                  <Button Grid.Row="7" Content="Cancel" IsVisible="{Binding SessionEditMode}" Command="{Binding SessionCancelCmd}"/>
+              </Grid>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="*, Auto, *" ColumnDefinitions="*, Auto, *">
-            <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="*, *" ColumnDefinitions="Auto, Auto">
-                <TextBox Grid.Row="0" Grid.ColumnSpan="2" Height="24" Width="200"/>
-				<Button Grid.Row="1" Grid.Column="0" Content="Add"/>
-				<Button Grid.Row="1" Grid.Column="1" Content="Cancel"/>
+        <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="*, Auto, *" ColumnDefinitions="*, Auto, *" Background="#55000000" IsVisible="{Binding GroupEditMode}">
+            <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="*, *,*" ColumnDefinitions="Auto, Auto">
+            <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="24" Width="200"/>
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="100" AcceptsReturn="True" Width="200"/>
+				<Button Grid.Row="2" Grid.Column="0" Content="Add"/>
+				<Button Grid.Row="2" Grid.Column="1" Content="Cancel"/>
             </Grid>
         </Grid>
         <!--<views:TagGridView x:Name="TagGridView" Grid.Row="1" Grid.Column="1" DataContext="{Binding TagGroupVM}"/>-->
