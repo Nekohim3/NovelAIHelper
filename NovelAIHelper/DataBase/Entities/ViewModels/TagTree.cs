@@ -102,6 +102,8 @@ public class TagTree : ViewModelBase
         if (remember) RememberExpandedAndSelected();
         RootDirs.Clear();
         Sessions.Clear();
+        SearchedTags.Clear();
+        Tags.Clear();
         _dirList     = new DirService().GetAll().ToList();
         _tagList     = new TagService().GetAll().ToList();
         _sessionList = new SessionService().GetAll().ToList();

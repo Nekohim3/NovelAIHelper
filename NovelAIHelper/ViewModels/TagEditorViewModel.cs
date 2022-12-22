@@ -54,14 +54,6 @@ internal class TagEditorViewModel : ViewModelBase
 
     #region Properties
 
-    private TagTree _tagTree = new();
-
-    public TagTree TagTree
-    {
-        get => _tagTree;
-        set => this.RaiseAndSetIfChanged(ref _tagTree, value);
-    }
-
     private bool _showInnerTags;
 
     public bool ShowInnerTags
@@ -116,35 +108,28 @@ internal class TagEditorViewModel : ViewModelBase
 
     public TagEditorViewModel(Window wnd)
     {
-        _wnd                              =  wnd;
-        _editedTag                        =  new UI_Tag();
-        TagTree.RootDirs.SelectionChanged += DirsTreeOnSelectionChanged;
-        DownloadFromDanbooruCmd           =  ReactiveCommand.Create(OnDownloadFromDanbooru);
-        ResetDatabaseCmd                  =  ReactiveCommand.Create(OnResetDatabase);
-        LoadTreeCmd                       =  ReactiveCommand.Create(OnLoadTree);
+        _wnd       = wnd;
+        _editedTag = new UI_Tag();
+        g.TagTree.LoadTree();
+        g.TagTree.RootDirs.SelectionChanged += DirsTreeOnSelectionChanged;
+        DownloadFromDanbooruCmd             =  ReactiveCommand.Create(OnDownloadFromDanbooru);
+        ResetDatabaseCmd                    =  ReactiveCommand.Create(OnResetDatabase);
+        LoadTreeCmd                         =  ReactiveCommand.Create(OnLoadTree);
 
-        AddRootDirCmd  = ReactiveCommand.Create(OnAddRootDir);
-        AddChildDirCmd = ReactiveCommand.Create(OnAddChildDir, this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem).Select(x => x != null));
-        EditDirCmd     = ReactiveCommand.Create(OnEditDir,     this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem).Select(x => x != null));
-        RemoveDirCmd   = ReactiveCommand.Create(OnRemoveDir,   this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem).Select(x => x != null));
-        MoveDirCmd     = ReactiveCommand.Create(OnMoveDir,     this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem).Select(x => x != null));
-        AddTagCmd      = ReactiveCommand.Create(OnAddTag,      this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem).Select(x => x != null));
-        EditTagCmd = ReactiveCommand.Create(OnEditTag,
-                                            this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem, x => x.TagTree.Tags.SelectedItem,
-                                                              (dir, tag) => dir != null && tag != null));
-        RemoveTagCmd = ReactiveCommand.Create(OnRemoveTag,
-                                              this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem, x => x.TagTree.Tags.SelectedItem,
-                                                                (dir, tag) => dir != null && tag != null));
-        AssignNewDirCmd = ReactiveCommand.Create(OnAssignNewDir,
-                                                 this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem, x => x.TagTree.Tags.SelectedItem,
-                                                                   (dir, tag) => dir != null && tag != null));
-        MoveTagCmd = ReactiveCommand.Create(OnMoveTag,
-                                            this.WhenAnyValue(x => x.TagTree.RootDirs.SelectedItem, x => x.TagTree.Tags.SelectedItem,
-                                                              (dir, tag) => dir != null && tag != null));
-        CancelTagCmd = ReactiveCommand.Create(OnCancelTag);
-        SaveDirCmd   = ReactiveCommand.Create(OnSaveDir);
-        CancelDirCmd = ReactiveCommand.Create(OnCancelDir);
-        SaveTagCmd   = ReactiveCommand.Create(OnSaveTag);
+        AddRootDirCmd   = ReactiveCommand.Create(OnAddRootDir);
+        AddChildDirCmd  = ReactiveCommand.Create(OnAddChildDir,  Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
+        EditDirCmd      = ReactiveCommand.Create(OnEditDir,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
+        RemoveDirCmd    = ReactiveCommand.Create(OnRemoveDir,    Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
+        MoveDirCmd      = ReactiveCommand.Create(OnMoveDir,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
+        AddTagCmd       = ReactiveCommand.Create(OnAddTag,       Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
+        EditTagCmd      = ReactiveCommand.Create(OnEditTag,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
+        RemoveTagCmd    = ReactiveCommand.Create(OnRemoveTag,    Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
+        AssignNewDirCmd = ReactiveCommand.Create(OnAssignNewDir, Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
+        MoveTagCmd      = ReactiveCommand.Create(OnMoveTag,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
+        CancelTagCmd    = ReactiveCommand.Create(OnCancelTag);
+        SaveDirCmd      = ReactiveCommand.Create(OnSaveDir);
+        CancelDirCmd    = ReactiveCommand.Create(OnCancelDir);
+        SaveTagCmd      = ReactiveCommand.Create(OnSaveTag);
     }
 
     #endregion
@@ -185,15 +170,15 @@ internal class TagEditorViewModel : ViewModelBase
 
     private async void OnAddChildDir()
     {
-        EditedDir      = new UI_Dir("", TagTree.RootDirs.SelectedItem.Id);
+        EditedDir      = new UI_Dir("", g.TagTree.RootDirs.SelectedItem.Id);
         DirEditVisible = true;
     }
 
     private async void OnEditDir()
     {
         EditedDir      = new UI_Dir();
-        EditedDir.Id   = TagTree.RootDirs.SelectedItem.Id;
-        EditedDir.Name = TagTree.RootDirs.SelectedItem.Name;
+        EditedDir.Id   = g.TagTree.RootDirs.SelectedItem.Id;
+        EditedDir.Name = g.TagTree.RootDirs.SelectedItem.Name;
         DirEditVisible = true;
     }
 
@@ -232,18 +217,18 @@ internal class TagEditorViewModel : ViewModelBase
     {
         EditedDir      = null;
         DirEditVisible = false;
-        var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove dir: \"{TagTree.RootDirs.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
+        var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove dir: \"{g.TagTree.RootDirs.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
         if (res == ButtonResult.Yes)
         {
             //TagTree.RootDirs.SelectedItem.Remove();
-            if (TagTree.RootDirs.SelectedItem.UI_Parent == null)
+            if (g.TagTree.RootDirs.SelectedItem.UI_Parent == null)
             {
-                TagTree.RootDirs.Remove(TagTree.RootDirs.SelectedItem);
+                g.TagTree.RootDirs.Remove(g.TagTree.RootDirs.SelectedItem);
             }
             else
             {
-                TagTree.RootDirs.SelectedItem.UI_Parent.ChildDirs.Remove(TagTree.RootDirs.SelectedItem);
-                TagTree.RootDirs.SelectedItem.ParentDir.ChildDirs.Remove(TagTree.RootDirs.SelectedItem);
+                g.TagTree.RootDirs.SelectedItem.UI_Parent.ChildDirs.Remove(g.TagTree.RootDirs.SelectedItem);
+                g.TagTree.RootDirs.SelectedItem.ParentDir.ChildDirs.Remove(g.TagTree.RootDirs.SelectedItem);
                 LoadTree(true);
             }
         }
@@ -262,8 +247,8 @@ internal class TagEditorViewModel : ViewModelBase
     private async void OnEditTag()
     {
         EditedTag      = new UI_Tag();
-        EditedTag.Id   = TagTree.Tags.SelectedItem.Id;
-        EditedTag.Name = TagTree.Tags.SelectedItem.Name;
+        EditedTag.Id   = g.TagTree.Tags.SelectedItem.Id;
+        EditedTag.Name = g.TagTree.Tags.SelectedItem.Name;
         TagEditVisible = true;
     }
 
@@ -271,17 +256,14 @@ internal class TagEditorViewModel : ViewModelBase
     {
         EditedTag      = null;
         TagEditVisible = false;
-        var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove tag: \"{TagTree.Tags.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
+        var res = await MessageBoxManager.GetMessageBoxStandardWindow("", $"Remove tag: \"{g.TagTree.Tags.SelectedItem.Name}\"?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd);
         if (res == ButtonResult.Yes)
-        {
             //TagTree.Tags.SelectedItem.Remove();
             LoadTree(true);
-        }
     }
 
     private void OnAssignNewDir()
     {
-        
     }
 
     private async void OnMoveTag()
@@ -291,17 +273,13 @@ internal class TagEditorViewModel : ViewModelBase
     private async void OnSaveTag()
     {
         if (EditedTag.Id == 0)
-        {
-            TagTree.RootDirs.SelectedItem.Tags.Add(EditedTag);
-            //TagTree.RootDirs.SelectedItem.Save();
-            //EditedTag.Dirs.Add(TagTree.RootDirs.SelectedItem);
-            //EditedTag.Add();
-        }
+            g.TagTree.RootDirs.SelectedItem.Tags.Add(EditedTag);
+        //TagTree.RootDirs.SelectedItem.Save();
+        //EditedTag.Dirs.Add(TagTree.RootDirs.SelectedItem);
+        //EditedTag.Add();
         else
-        {
-            TagTree.Tags.SelectedItem.Name = EditedTag.Name;
-            //TagTree.Tags.SelectedItem.Save();
-        }
+            g.TagTree.Tags.SelectedItem.Name = EditedTag.Name;
+        //TagTree.Tags.SelectedItem.Save();
 
         TagEditVisible = false;
         EditedTag      = null;
@@ -320,22 +298,22 @@ internal class TagEditorViewModel : ViewModelBase
 
     public void LoadTree(bool remember = false)
     {
-        TagTree.LoadTree(remember);
+        g.TagTree.LoadTree(remember);
     }
 
     public void LoadTags()
     {
-        if (TagTree.RootDirs.SelectedItem == null) return;
-        TagTree.Tags.Clear();
+        if (g.TagTree.RootDirs.SelectedItem == null) return;
+        g.TagTree.Tags.Clear();
         if (ShowInnerTags)
-            LoadTags(TagTree.RootDirs.SelectedItem);
+            LoadTags(g.TagTree.RootDirs.SelectedItem);
         else
-            TagTree.Tags.AddRange(TagTree.RootDirs.SelectedItem.UI_Tags);
+            g.TagTree.Tags.AddRange(g.TagTree.RootDirs.SelectedItem.UI_Tags);
     }
 
     private void LoadTags(UI_Dir dir)
     {
-        TagTree.Tags.AddRange(dir.UI_Tags);
+        g.TagTree.Tags.AddRange(dir.UI_Tags);
         foreach (var x in dir.UI_Childs) LoadTags(x);
     }
 
@@ -346,7 +324,7 @@ internal class TagEditorViewModel : ViewModelBase
 
     private void DirsTreeOnSelectionChanged(ObservableCollectionWithSelectedItem<UI_Dir> sender, UI_Dir newselection, UI_Dir oldselection)
     {
-        if (TagTree.RootDirs.SelectedItem != null)
+        if (g.TagTree.RootDirs.SelectedItem != null)
             LoadTags();
         OnCancelDir();
         OnCancelTag();

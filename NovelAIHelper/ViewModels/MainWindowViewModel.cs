@@ -72,6 +72,14 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _sessionEditMode, value);
     }
 
+    private bool _sessionAddType;
+
+    public bool SessionAddType
+    {
+        get => _sessionAddType;
+        set => this.RaiseAndSetIfChanged(ref _sessionAddType, value);
+    }
+
     public MainWindowViewModel()
     {
     }
@@ -100,7 +108,7 @@ public class MainWindowViewModel : ViewModelBase
         f.Closed += (_, _) =>
                     {
                         f.DataContext = null;
-                        g.TagTree     = new TagTree();
+                        g.TagTree.LoadTree();
                         GC.Collect();
                         GC.Collect();
                         GC.Collect();
@@ -159,12 +167,14 @@ public class MainWindowViewModel : ViewModelBase
     {
         SessionEditMode = true;
         CurrentSession  = new UI_Session();
+        SessionAddType  = true;
     }
 
     private void OnSessionEdit()
     {
         if(g.TagTree.Sessions.SelectedItem == null) return;
         SessionEditMode = true;
+        SessionAddType  = false;
         CurrentSession  = g.TagTree.Sessions.SelectedItem.GetCopy();
     }
 
@@ -180,12 +190,12 @@ public class MainWindowViewModel : ViewModelBase
         if (CurrentSession.Id == 0)
         {
             saved = CurrentSession.Save();
+            //todo:reload sessions
         }
         else
         {
             CurrentSession.CopyTo(g.TagTree.Sessions.SelectedItem);
-            if(g.TagTree.Sessions.SelectedItem)
-            saved = g.TagTree.Sessions.SelectedItem.Save();
+            saved                                = g.TagTree.Sessions.SelectedItem.Save();
         }
         if(!saved)
             MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save session failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);

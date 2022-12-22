@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using NovelAIHelper.DataBase.Entities.DataBase;
@@ -28,7 +29,11 @@ public class TService<T, TT> where T : IdEntity where TT : T
         if (t.Id == 0)
             g.Ctx.Add(t);
         else
+        {
             g.Ctx.Attach(t);
+            g.Ctx.Update(t);
+        }
+
         return g.Ctx.SaveChanges() > 0;
     }
 
@@ -39,6 +44,7 @@ public class TService<T, TT> where T : IdEntity where TT : T
         var olds = tList.Where(x => x.Id != 0);
         g.Ctx.AddRange(news);
         g.Ctx.AttachRange(olds);
+        g.Ctx.UpdateRange(olds);
         return g.Ctx.SaveChanges() > 0;
     }
 
