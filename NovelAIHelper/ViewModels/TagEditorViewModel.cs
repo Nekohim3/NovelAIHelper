@@ -117,15 +117,15 @@ internal class TagEditorViewModel : ViewModelBase
         LoadTreeCmd                         =  ReactiveCommand.Create(OnLoadTree);
 
         AddRootDirCmd   = ReactiveCommand.Create(OnAddRootDir);
-        AddChildDirCmd  = ReactiveCommand.Create(OnAddChildDir,  Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
-        EditDirCmd      = ReactiveCommand.Create(OnEditDir,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
-        RemoveDirCmd    = ReactiveCommand.Create(OnRemoveDir,    Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
-        MoveDirCmd      = ReactiveCommand.Create(OnMoveDir,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
-        AddTagCmd       = ReactiveCommand.Create(OnAddTag,       Observable.Return(g.TagTree.RootDirs.SelectedItem != null));
-        EditTagCmd      = ReactiveCommand.Create(OnEditTag,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
-        RemoveTagCmd    = ReactiveCommand.Create(OnRemoveTag,    Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
-        AssignNewDirCmd = ReactiveCommand.Create(OnAssignNewDir, Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
-        MoveTagCmd      = ReactiveCommand.Create(OnMoveTag,      Observable.Return(g.TagTree.RootDirs.SelectedItem != null && g.TagTree.Tags.SelectedItem != null));
+        AddChildDirCmd  = ReactiveCommand.Create(OnAddChildDir,  g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, selector: _ => _ != null));
+        EditDirCmd      = ReactiveCommand.Create(OnEditDir,      g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, selector: _ => _ != null));
+        RemoveDirCmd    = ReactiveCommand.Create(OnRemoveDir,    g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, selector: _ => _ != null));
+        MoveDirCmd      = ReactiveCommand.Create(OnMoveDir,      g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, selector: _ => _ != null));
+        AddTagCmd       = ReactiveCommand.Create(OnAddTag,       g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, selector: _ => _ != null));
+        EditTagCmd      = ReactiveCommand.Create(OnEditTag,      g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, _ => _.Tags.SelectedItem, (q, w) => q != null && w != null));
+        RemoveTagCmd    = ReactiveCommand.Create(OnRemoveTag,    g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, _ => _.Tags.SelectedItem, (q, w) => q != null && w != null));
+        AssignNewDirCmd = ReactiveCommand.Create(OnAssignNewDir, g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, _ => _.Tags.SelectedItem, (q, w) => q != null && w != null));
+        MoveTagCmd      = ReactiveCommand.Create(OnMoveTag,      g.TagTree.WhenAnyValue(_ => _.RootDirs.SelectedItem, _ => _.Tags.SelectedItem, (q, w) => q != null && w != null));
         CancelTagCmd    = ReactiveCommand.Create(OnCancelTag);
         SaveDirCmd      = ReactiveCommand.Create(OnSaveDir);
         CancelDirCmd    = ReactiveCommand.Create(OnCancelDir);

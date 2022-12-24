@@ -181,6 +181,28 @@ public partial class MainWindow : Window
                 tag.Strength--;
         }
     }
+
+    private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.OemTilde && e.KeyModifiers == KeyModifiers.Control)
+        {
+            var f = new TagEditorView();
+            f.DataContext = new TagEditorViewModel(f);
+            f.Show(this);
+            f.Closed += (_, _) =>
+                        {
+                            f.DataContext = null;
+                            g.TagTree.LoadTree();
+                            GC.Collect();
+                        };
+        }
+
+        if (e.Key == Key.S && e.KeyModifiers == KeyModifiers.Control)
+        {
+            var vm = DataContext as MainWindowViewModel;
+            vm.SessionsOpen = !vm.SessionsOpen;
+        }
+    }
 }
 
 public struct Point

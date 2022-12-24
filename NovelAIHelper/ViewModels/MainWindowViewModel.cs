@@ -38,6 +38,7 @@ public class MainWindowViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> SessionCancelCmd { get; }
 
     private bool _sessionsOpen;
+
     public bool SessionsOpen
     {
         get => _sessionsOpen;
@@ -45,6 +46,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private bool _groupEditMode;
+
     public bool GroupEditMode
     {
         get => _groupEditMode;
@@ -52,6 +54,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private UI_Group? _currentGroup;
+
     public UI_Group? CurrentGroup
     {
         get => _currentGroup;
@@ -59,6 +62,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private UI_Session? _currentSession;
+
     public UI_Session? CurrentSession
     {
         get => _currentSession;
@@ -66,6 +70,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private bool _sessionEditMode;
+
     public bool SessionEditMode
     {
         get => _sessionEditMode;
@@ -86,18 +91,19 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(Window wnd)
     {
-        _wnd = wnd;
-
-        GroupAddCmd      = ReactiveCommand.Create(OnGroupAdd);
-        GroupSaveCmd     = ReactiveCommand.Create(OnGroupSave);
-        GroupCancelCmd   = ReactiveCommand.Create(OnGroupCancel);
+        _wnd             = wnd;
+        GroupAddCmd      = ReactiveCommand.Create(OnGroupAdd,    g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
+        GroupSaveCmd     = ReactiveCommand.Create(OnGroupSave,   this.WhenAnyValue(_ => _.GroupEditMode, _ => _.CurrentGroup, (q, w) => q && !string.IsNullOrEmpty(w?.Name)));
+        GroupCancelCmd   = ReactiveCommand.Create(OnGroupCancel, this.WhenAnyValue(_ => _.GroupEditMode));
         TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
 
         SessionAddCmd    = ReactiveCommand.Create(OnSessionAdd);
-        SessionEditCmd   = ReactiveCommand.Create(OnSessionEdit);
-        SessionRemoveCmd = ReactiveCommand.Create(OnSessionRemove);
-        SessionSaveCmd   = ReactiveCommand.Create(OnSessionSave);
-        SessionCancelCmd = ReactiveCommand.Create(OnSessionCancel);
+        SessionEditCmd   = ReactiveCommand.Create(OnSessionEdit,   g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
+        SessionRemoveCmd = ReactiveCommand.Create(OnSessionRemove, g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
+        SessionSaveCmd = ReactiveCommand.Create(OnSessionSave,
+                                                Observable.CombineLatest(g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem).Select(_ => _ != null), this.WhenAnyValue(_ => _.SessionEditMode))
+                                                          .Select(_ => _.All(_ => _)));
+        SessionCancelCmd = ReactiveCommand.Create(OnSessionCancel, this.WhenAnyValue(_ => _.SessionEditMode));
     }
 
     private void OnTagEditorShow()
@@ -109,9 +115,6 @@ public class MainWindowViewModel : ViewModelBase
                     {
                         f.DataContext = null;
                         g.TagTree.LoadTree();
-                        GC.Collect();
-                        GC.Collect();
-                        GC.Collect();
                         GC.Collect();
                     };
     }
@@ -138,7 +141,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         if (string.IsNullOrEmpty(CurrentGroup.Name))
             return;
-        bool saved = false;
+        var saved = false;
         if (CurrentGroup.Id == 0)
         {
             g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Add(CurrentGroup);
@@ -148,6 +151,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             saved = CurrentGroup.Save();
         }
+
         if (!saved)
             MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save group failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
 
@@ -172,7 +176,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void OnSessionEdit()
     {
-        if(g.TagTree.Sessions.SelectedItem == null) return;
+        if (g.TagTree.Sessions.SelectedItem == null) return;
         SessionEditMode = true;
         SessionAddType  = false;
         CurrentSession  = g.TagTree.Sessions.SelectedItem.GetCopy();
@@ -180,27 +184,32 @@ public class MainWindowViewModel : ViewModelBase
 
     private void OnSessionRemove()
     {
+        if (g.TagTree.Sessions.SelectedItem == null)
+            return;
+        g.TagTree.Sessions.SelectedItem.Delete();
+        g.TagTree.LoadSessions(true);
     }
 
     private void OnSessionSave()
     {
-        if(CurrentSession == null) return;
-        if(string.IsNullOrEmpty(CurrentSession.Name)) return;
+        if (CurrentSession == null) return;
+        if (string.IsNullOrEmpty(CurrentSession.Name)) return;
         var saved = false;
         if (CurrentSession.Id == 0)
         {
             saved = CurrentSession.Save();
-            //todo:reload sessions
         }
         else
         {
             CurrentSession.CopyTo(g.TagTree.Sessions.SelectedItem);
-            saved                                = g.TagTree.Sessions.SelectedItem.Save();
+            saved = g.TagTree.Sessions.SelectedItem.Save();
         }
-        if(!saved)
+
+        if (!saved)
             MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save session failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
         CurrentSession  = null;
         SessionEditMode = false;
+        g.TagTree.LoadSessions(true);
     }
 
     private void OnSessionCancel()

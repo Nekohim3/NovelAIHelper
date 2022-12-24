@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper.Execution;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using NovelAIHelper.DataBase.Services;
@@ -88,6 +89,7 @@ public class TagTree : ViewModelBase
     private List<UI_GroupTag> _partTags    = new();
     private List<int>         _expandedIds = new();
     private int               _selectedId;
+    private int _selectedSessionId;
     private DragObject        _dragObject;
 
     public TagTree()
@@ -97,32 +99,53 @@ public class TagTree : ViewModelBase
 
     #region Loader
 
-    public void LoadTree(bool remember = false)
+    public void LoadDirs(bool remember = false)
     {
-        if (remember) RememberExpandedAndSelected();
+        if (remember) RememberExpandedAndSelectedDirsTags();
         RootDirs.Clear();
-        Sessions.Clear();
         SearchedTags.Clear();
         Tags.Clear();
-        _dirList     = new DirService().GetAll().ToList();
-        _tagList     = new TagService().GetAll().ToList();
+        _tagList = new TagService().GetAll().ToList();
+        _dirList = new DirService().GetAll().ToList();
+        AssignTagsToDirs(_dirList, _tagList);
+        BuildTree(_dirList);
+        if (remember) RestoreExpandedAndSelectedDirsTags();
+    }
+
+    public void LoadSessions(bool remember = false)
+    {
+        if (remember) RememberSelectedSession();
+        Sessions.Clear();
         _sessionList = new SessionService().GetAll().ToList();
         _groupList   = new SessionPartService().GetAll().ToList();
         _partTags    = new PartTagService().GetAll().ToList();
-
-        AssignTagsToDirs(_dirList, _tagList);
-        BuildTree(_dirList);
         BuildSessions(_sessionList);
-        if (remember) RestoreExpandedAndSelected();
+        if (remember) RestoreSelectedSession();
     }
 
-    public void RememberExpandedAndSelected()
+    public void LoadTree(bool remember = false)
+    {
+        LoadDirs(remember);
+        LoadSessions(remember);
+    }
+
+    public void RememberExpandedAndSelectedDirsTags()
+    {
+        _selectedSessionId = Sessions.SelectedItem?.Id ?? 0;
+    }
+
+    public void RestoreExpandedAndSelectedDirsTags()
+    {
+        Sessions.SelectedItem = _sessionList.FirstOrDefault(x => x.Id == _selectedSessionId);
+    }
+
+    public void RememberSelectedSession()
     {
         _expandedIds = _dirList.Where(x => x.IsExpanded && x.Id > 0).Select(x => x.Id).ToList();
         _selectedId  = RootDirs.SelectedItem?.Id ?? 0;
     }
 
-    public void RestoreExpandedAndSelected()
+    public void RestoreSelectedSession()
     {
         foreach (var x in _dirList.Where(x => _expandedIds.Contains(x.Id))) x.IsExpanded = true;
         RootDirs.SelectedItem = _dirList.FirstOrDefault(x => x.Id == _selectedId);
