@@ -100,9 +100,7 @@ public class MainWindowViewModel : ViewModelBase
         SessionAddCmd    = ReactiveCommand.Create(OnSessionAdd);
         SessionEditCmd   = ReactiveCommand.Create(OnSessionEdit,   g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
         SessionRemoveCmd = ReactiveCommand.Create(OnSessionRemove, g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
-        SessionSaveCmd = ReactiveCommand.Create(OnSessionSave,
-                                                Observable.CombineLatest(g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem).Select(_ => _ != null), this.WhenAnyValue(_ => _.SessionEditMode))
-                                                          .Select(_ => _.All(_ => _)));
+        SessionSaveCmd   = ReactiveCommand.Create(OnSessionSave,   this.WhenAnyValue(_ => _.SessionEditMode));
         SessionCancelCmd = ReactiveCommand.Create(OnSessionCancel, this.WhenAnyValue(_ => _.SessionEditMode));
     }
 
@@ -127,10 +125,19 @@ public class MainWindowViewModel : ViewModelBase
 
     public void OnGroupEdit(UI_Group group)
     {
+        if (g.TagTree.Sessions.SelectedItem == null) return;
+        GroupEditMode = true;
+        CurrentGroup  = group.GetCopy();
     }
 
     public void OnGroupDelete(UI_Group group)
     {
+        if (g.TagTree.Sessions.SelectedItem == null) return;
+        g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Remove(group);
+        group.Delete();
+        g.TagTree.Sessions.SelectedItem.Save();
+        //group.Delete();
+        g.TagTree.LoadSessions(true);
     }
 
     private void OnGroupSave()
@@ -145,14 +152,13 @@ public class MainWindowViewModel : ViewModelBase
         if (CurrentGroup.Id == 0)
         {
             g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Add(CurrentGroup);
-            //saved = g.TagTree.Sessions.SelectedItem.Save();
+            CurrentGroup.Order = g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Max(x => x.Order) + 1;
         }
         else
         {
             CurrentGroup.CopyTo(g.TagTree.Sessions.SelectedItem.UI_SessionGroups.FirstOrDefault(_ => _.Id == CurrentGroup.Id));
-            //saved = g.TagTree.Sessions.SelectedItem.UI_SessionGroups.FirstOrDefault(_ => _.Id == CurrentGroup.Id).Save();
         }
-        g.ResetCtx();
+        
         saved = g.TagTree.Sessions.SelectedItem.Save();
 
         if (!saved)

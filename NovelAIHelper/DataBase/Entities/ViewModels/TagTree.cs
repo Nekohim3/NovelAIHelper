@@ -105,7 +105,7 @@ public class TagTree : ViewModelBase
         RootDirs.Clear();
         SearchedTags.Clear();
         Tags.Clear();
-        g.ResetCtx();
+        //g.ResetCtx();
         _tagList = new TagService().GetAll().ToList();
         _dirList = new DirService().GetAll().ToList();
         AssignTagsToDirs(_dirList, _tagList);
@@ -115,12 +115,13 @@ public class TagTree : ViewModelBase
 
     public void LoadSessions(bool remember = false)
     {
+        AdjustOrders();
         if (remember) RememberSelectedSession();
         Sessions.Clear();
-        g.ResetCtx();
+        //g.ResetCtx();
         _sessionList = new SessionService().GetAll().ToList();
-        _groupList   = new SessionPartService().GetAll().ToList();
-        _partTags    = new PartTagService().GetAll().ToList();
+        _groupList   = new GroupService().GetAll().OrderBy(x => x.Order).ToList();
+        _partTags    = new GroupTagService().GetAll().OrderBy(x => x.Order).ToList();
         BuildSessions(_sessionList);
         if (remember) RestoreSelectedSession();
     }
@@ -133,24 +134,24 @@ public class TagTree : ViewModelBase
 
     public void RememberExpandedAndSelectedDirsTags()
     {
-        _selectedSessionId = Sessions.SelectedItem?.Id ?? 0;
-    }
-
-    public void RestoreExpandedAndSelectedDirsTags()
-    {
-        Sessions.SelectedItem = _sessionList.FirstOrDefault(x => x.Id == _selectedSessionId);
-    }
-
-    public void RememberSelectedSession()
-    {
         _expandedIds = _dirList.Where(x => x.IsExpanded && x.Id > 0).Select(x => x.Id).ToList();
         _selectedId  = RootDirs.SelectedItem?.Id ?? 0;
     }
 
-    public void RestoreSelectedSession()
+    public void RestoreExpandedAndSelectedDirsTags()
     {
         foreach (var x in _dirList.Where(x => _expandedIds.Contains(x.Id))) x.IsExpanded = true;
-        RootDirs.SelectedItem = _dirList.FirstOrDefault(x => x.Id == _selectedId);
+        RootDirs.SelectedItem = _dirList.FirstOrDefault(x => x.Id     == _selectedId);
+    }
+
+    public void RememberSelectedSession()
+    {
+        _selectedSessionId = Sessions.SelectedItem?.Id ?? 0;
+    }
+
+    public void RestoreSelectedSession()
+    {
+        Sessions.SelectedItem = _sessionList.FirstOrDefault(x => x.Id == _selectedSessionId);
     }
 
     private void AssignTagsToDirs(List<UI_Dir> dirs, List<UI_Tag> tags)
@@ -218,10 +219,12 @@ public class TagTree : ViewModelBase
 
     public void DragEnd()
     {
+        AdjustOrders();
         SourceDragGroup = null;
         if (DraggedTag == null) return;
         DraggedTag.IsDrag = false;
         DraggedTag        = null;
+        
         //todo: save
     }
 
@@ -285,6 +288,48 @@ public class TagTree : ViewModelBase
     }
 
     #endregion
+
+    public void AdjustOrders()
+    {
+        if (Sessions.SelectedItem != null)
+        {
+            var lstGroups    = new List<UI_Group>();
+            var lstGroupTags = new List<UI_GroupTag>();
+            for (var i = 0; i < Sessions.SelectedItem.UI_SessionGroups.Count; i++)
+            {
+                Sessions.SelectedItem.UI_SessionGroups[i].Order = i;
+                lstGroups.Add(Sessions.SelectedItem.UI_SessionGroups[i]);
+                for (var j = 0; j < Sessions.SelectedItem.UI_SessionGroups[i].UI_GroupTags.Count; j++)
+                {
+                    Sessions.SelectedItem.UI_SessionGroups[i].UI_GroupTags[j].Order = j;
+                    lstGroupTags.Add(Sessions.SelectedItem.UI_SessionGroups[i].UI_GroupTags[j]);
+                }
+            }
+            new GroupService().SaveRange(lstGroups);
+            new GroupTagService().SaveRange(lstGroupTags);
+
+        }
+        else
+        {
+            foreach (var x in Sessions)
+            {
+                var lstGroups    = new List<UI_Group>();
+                var lstGroupTags = new List<UI_GroupTag>();
+                for (var i = 0; i < x.UI_SessionGroups.Count; i++)
+                {
+                    x.UI_SessionGroups[i].Order = i;
+                    lstGroups.Add(x.UI_SessionGroups[i]);
+                    for (var j = 0; j < x.UI_SessionGroups[i].UI_GroupTags.Count; j++)
+                    {
+                        x.UI_SessionGroups[i].UI_GroupTags[j].Order = j;
+                        lstGroupTags.Add(x.UI_SessionGroups[i].UI_GroupTags[j]);
+                    }
+                }
+                new GroupService().SaveRange(lstGroups);
+                new GroupTagService().SaveRange(lstGroupTags);
+            }
+        }
+    }
 
     public void Search(string name)
     {

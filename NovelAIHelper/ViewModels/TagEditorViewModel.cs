@@ -146,7 +146,6 @@ internal class TagEditorViewModel : ViewModelBase
     {
         if (await MessageBoxManager.GetMessageBoxStandardWindow("", "Are you sure about that?", ButtonEnum.YesNo, Icon.Question).ShowDialog(_wnd) == ButtonResult.Yes)
         {
-            g.Ctx = new TagContext(true);
             LoadTree();
         }
     }
@@ -155,7 +154,7 @@ internal class TagEditorViewModel : ViewModelBase
     {
         var res = await MessageBoxManager.GetMessageBoxStandardWindow("", "Reset database?", ButtonEnum.YesNoCancel, Icon.Question).ShowDialog(_wnd);
         if (res == ButtonResult.Yes)
-            g.Ctx = new TagContext(true);
+            new TagContext(true);
         else if (res == ButtonResult.Cancel) return;
         var loader = new DanbooruLoader();
         loader.DownloadAll();

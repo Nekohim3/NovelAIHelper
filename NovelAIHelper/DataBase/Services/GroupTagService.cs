@@ -8,7 +8,7 @@ using NovelAIHelper.DataBase.Entities.ViewModels;
 
 namespace NovelAIHelper.DataBase.Services
 {
-    public class PartTagService : TService<GroupTag, UI_GroupTag>
+    public class GroupTagService : TService<GroupTag, UI_GroupTag>
     {
     }
 }

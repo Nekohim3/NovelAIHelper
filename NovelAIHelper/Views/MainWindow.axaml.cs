@@ -35,6 +35,7 @@ public partial class MainWindow : Window
 
     private async void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        
         if (sender is Grid tagGrid && tagGrid.Classes.Contains("TagGrid") && tagGrid.Parent is Border {Parent: ContentPresenter {Parent: ItemsControl tagCtrl}})
         {
             if (e.KeyModifiers == KeyModifiers.None)
@@ -52,6 +53,7 @@ public partial class MainWindow : Window
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
+
                     //var vm = (DataContext as MainWindowViewModel).TagTree.Sessions.SelectedItem;
                     //vm.UI_SessionParts.Remove(_sessionPart);
                     //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
@@ -68,16 +70,28 @@ public partial class MainWindow : Window
                 _group = groupTagGrid.DataContext as UI_Group;
                 _dragObject  = DragObject.Group;
             }
-            else if (e.KeyModifiers == KeyModifiers.Control)
+            else if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift)
             {
+                _group = groupTagGrid.DataContext as UI_Group;
                 var res = await MessageBoxManager
                                 .GetMessageBoxStandardWindow("", $"Remove tag group: \"{_group.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
-                    //var vm = (DataContext as MainWindowViewModel).TagTree.Sessions.SelectedItem;
-                    //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
-                    //vm.TagGrid.Remove((groupTagGrid.DataContext as TagGroup));
+                    var vm = DataContext as MainWindowViewModel;
+                    vm.OnGroupDelete(_group);
+                }
+            }
+            else if (e.KeyModifiers == KeyModifiers.Control)
+            {
+                _group = groupTagGrid.DataContext as UI_Group;
+                var res = await MessageBoxManager
+                               .GetMessageBoxStandardWindow("", $"Remove tag group: \"{_group.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                               .ShowDialog(this);
+                if (res == ButtonResult.Yes)
+                {
+                    var vm = DataContext as MainWindowViewModel;
+                    vm.OnGroupEdit(_group);
                 }
             }
         }

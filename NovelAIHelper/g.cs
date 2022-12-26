@@ -14,19 +14,19 @@ public static class g
 {
     private static List<(Type type, MapperConfiguration mapperConfiguration, Mapper mapper)> _mapList = new();
 
-    public static TagContext Ctx { get; set; }
+    //public static TagContext Ctx { get; set; }
 
     public static TagTree TagTree { get; set; }
 
-    public static void ResetCtx(bool reset = false)
-    {
-        if (Ctx != null) Ctx.Dispose();
-        Ctx = new TagContext(reset);
-    }
+    //public static void ResetCtx(bool reset = false)
+    //{
+    //    if (Ctx != null) Ctx.Dispose();
+    //    Ctx = new TagContext(reset);
+    //}
 
     static g()
     {
-        Ctx     = new TagContext();
+        //Ctx     = new TagContext();
         TagTree = new TagTree();
     }
 

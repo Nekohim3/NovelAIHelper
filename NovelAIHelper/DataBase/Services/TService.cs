@@ -14,7 +14,11 @@ public class TService<T, TT> where T : IdEntity where TT : T
 {
     static TService() { g.AddMapper<T, TT>(); }
 
-    public virtual IEnumerable<TT> GetAll() => g.Ctx.Set<T>().ProjectTo<TT>(g.GetMap<TT>()).AsEnumerable();
+    public virtual IList<TT> GetAll()
+    {
+        using var ctx = new TagContext();
+        return ctx.Set<T>().ProjectTo<TT>(g.GetMap<TT>()).AsEnumerable().ToList();
+    }
 
     //public virtual bool Add(TT tt) => Add((T)tt);
     public virtual bool AddRange(IList<TT> ttList) => SaveRange(ttList.OfType<T>().ToList());
@@ -26,44 +30,48 @@ public class TService<T, TT> where T : IdEntity where TT : T
     public virtual bool Add(T t) => Save(t);
     public virtual bool Save(T t)
     {
+        using var ctx = new TagContext();
         if (t.Id == 0)
-            g.Ctx.Add(t);
+            ctx.Add(t);
         else
         {
             try
             {
-                g.Ctx.Attach(t);
+                ctx.Attach(t);
             }
             catch (Exception e)
             {
                 
             }
-            g.Ctx.Update(t);
+            ctx.Update(t);
         }
 
-        return g.Ctx.SaveChanges() > 0;
+        return ctx.SaveChanges() > 0;
     }
 
     public virtual bool AddRange(IList<T> tList) => SaveRange(tList);
     public virtual bool SaveRange(IList<T> tList)
     {
-        var news = tList.Where(x => x.Id == 0);
-        var olds = tList.Where(x => x.Id != 0);
-        g.Ctx.AddRange(news);
-        g.Ctx.AttachRange(olds);
-        g.Ctx.UpdateRange(olds);
-        return g.Ctx.SaveChanges() > 0;
+        using var ctx  = new TagContext();
+        var       news = tList.Where(x => x.Id == 0);
+        var       olds = tList.Where(x => x.Id != 0);
+        ctx.AddRange(news);
+        ctx.AttachRange(olds);
+        ctx.UpdateRange(olds);
+        return ctx.SaveChanges() > 0;
     }
 
     public virtual bool Delete(T t)
     {
-        g.Ctx.Entry(t).State = EntityState.Deleted;
-        return g.Ctx.SaveChanges() > 0;
+        using var ctx = new TagContext();
+        ctx.Entry(t).State = EntityState.Deleted;
+        return ctx.SaveChanges() > 0;
     }
 
     public virtual bool DeleteRange(IList<T> list)
     {
-        foreach (var x in list) g.Ctx.Entry(x).State = EntityState.Deleted;
-        return g.Ctx.SaveChanges() > 0;
+        using var ctx                                = new TagContext();
+        foreach (var x in list) ctx.Entry(x).State = EntityState.Deleted;
+        return ctx.SaveChanges() > 0;
     }
 }
