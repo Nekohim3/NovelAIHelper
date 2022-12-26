@@ -93,7 +93,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         _wnd             = wnd;
         GroupAddCmd      = ReactiveCommand.Create(OnGroupAdd,    g.TagTree.WhenAnyValue(_ => _.Sessions.SelectedItem, selector: _ => _ != null));
-        GroupSaveCmd     = ReactiveCommand.Create(OnGroupSave,   this.WhenAnyValue(_ => _.GroupEditMode, _ => _.CurrentGroup, (q, w) => q && !string.IsNullOrEmpty(w?.Name)));
+        GroupSaveCmd     = ReactiveCommand.Create(OnGroupSave,   this.WhenAnyValue(_ => _.GroupEditMode, _ => _.CurrentGroup.Name, (q, w) => q && !string.IsNullOrEmpty(w)));
         GroupCancelCmd   = ReactiveCommand.Create(OnGroupCancel, this.WhenAnyValue(_ => _.GroupEditMode));
         TagEditorShowCmd = ReactiveCommand.Create(OnTagEditorShow);
 
@@ -119,7 +119,7 @@ public class MainWindowViewModel : ViewModelBase
                     };
     }
 
-    private void OnGroupAdd()
+    public void OnGroupAdd()
     {
         CurrentGroup  = new UI_Group();
         GroupEditMode = true;
@@ -145,18 +145,23 @@ public class MainWindowViewModel : ViewModelBase
         if (CurrentGroup.Id == 0)
         {
             g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Add(CurrentGroup);
-            saved = g.TagTree.Sessions.SelectedItem.Save();
+            //saved = g.TagTree.Sessions.SelectedItem.Save();
         }
         else
         {
-            saved = CurrentGroup.Save();
+            CurrentGroup.CopyTo(g.TagTree.Sessions.SelectedItem.UI_SessionGroups.FirstOrDefault(_ => _.Id == CurrentGroup.Id));
+            //saved = g.TagTree.Sessions.SelectedItem.UI_SessionGroups.FirstOrDefault(_ => _.Id == CurrentGroup.Id).Save();
         }
+        g.ResetCtx();
+        saved = g.TagTree.Sessions.SelectedItem.Save();
 
         if (!saved)
             MessageBoxManager.GetMessageBoxStandardWindow("", "Add/Save group failed", ButtonEnum.Ok, Icon.Error).ShowDialog(_wnd);
 
         CurrentGroup  = null;
         GroupEditMode = false;
+
+        g.TagTree.LoadSessions(true);
     }
 
     private void OnGroupCancel()

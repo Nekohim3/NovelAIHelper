@@ -105,6 +105,7 @@ public class TagTree : ViewModelBase
         RootDirs.Clear();
         SearchedTags.Clear();
         Tags.Clear();
+        g.ResetCtx();
         _tagList = new TagService().GetAll().ToList();
         _dirList = new DirService().GetAll().ToList();
         AssignTagsToDirs(_dirList, _tagList);
@@ -116,6 +117,7 @@ public class TagTree : ViewModelBase
     {
         if (remember) RememberSelectedSession();
         Sessions.Clear();
+        g.ResetCtx();
         _sessionList = new SessionService().GetAll().ToList();
         _groupList   = new SessionPartService().GetAll().ToList();
         _partTags    = new PartTagService().GetAll().ToList();

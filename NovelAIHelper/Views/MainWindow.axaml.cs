@@ -202,6 +202,12 @@ public partial class MainWindow : Window
             var vm = DataContext as MainWindowViewModel;
             vm.SessionsOpen = !vm.SessionsOpen;
         }
+
+        if (e.Key == Key.A && e.KeyModifiers == KeyModifiers.Control)
+        {
+            var vm = DataContext as MainWindowViewModel;
+            vm.OnGroupAdd();
+        }
     }
 }
 

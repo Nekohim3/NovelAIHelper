@@ -133,10 +133,10 @@
         </Grid>
         <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="*, Auto, *" ColumnDefinitions="*, Auto, *" Background="#55000000" IsVisible="{Binding GroupEditMode}">
             <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="*, *,*" ColumnDefinitions="Auto, Auto">
-            <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="24" Width="200"/>
-            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="100" AcceptsReturn="True" Width="200"/>
-				<Button Grid.Row="2" Grid.Column="0" Content="Add"/>
-				<Button Grid.Row="2" Grid.Column="1" Content="Cancel"/>
+            <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="24" Width="200" Text="{Binding CurrentGroup.Name}"/>
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="100" AcceptsReturn="True" Width="200" Text="{Binding CurrentGroup.Comment}"/>
+				<Button Grid.Row="2" Grid.Column="0" Content="Save" Command="{Binding GroupSaveCmd}"/>
+				<Button Grid.Row="2" Grid.Column="1" Content="Cancel" Command="{Binding GroupCancelCmd}"/>
             </Grid>
         </Grid>
         <!--<views:TagGridView x:Name="TagGridView" Grid.Row="1" Grid.Column="1" DataContext="{Binding TagGroupVM}"/>-->

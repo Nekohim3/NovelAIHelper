@@ -30,7 +30,14 @@ public class TService<T, TT> where T : IdEntity where TT : T
             g.Ctx.Add(t);
         else
         {
-            g.Ctx.Attach(t);
+            try
+            {
+                g.Ctx.Attach(t);
+            }
+            catch (Exception e)
+            {
+                
+            }
             g.Ctx.Update(t);
         }
 
