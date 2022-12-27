@@ -28,7 +28,7 @@ public class GroupTag : IdEntity
     }
 
     public                                int   IdGroup { get; set; }
-    [ForeignKey("IdPart")] public virtual Group Group   { get; set; }
+    [ForeignKey("IdGroup")] public virtual Group Group   { get; set; }
 
     public                               int IdTag { get; set; }
     [ForeignKey("IdTag")] public virtual Tag Tag   { get; set; }

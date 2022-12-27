@@ -70,6 +70,13 @@ public class TagTree : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _draggedTag, value);
     }
 
+    private UI_GroupTag? _draggedGroupTag;
+    public UI_GroupTag? DraggedGroupTag
+    {
+        get => _draggedGroupTag;
+        set => this.RaiseAndSetIfChanged(ref _draggedGroupTag, value);
+    }
+
     private string _searchString = "";
 
     public string SearchString
@@ -86,7 +93,7 @@ public class TagTree : ViewModelBase
     private List<UI_Tag>      _tagList     = new();
     private List<UI_Session>  _sessionList = new();
     private List<UI_Group>    _groupList   = new();
-    private List<UI_GroupTag> _partTags    = new();
+    private List<UI_GroupTag> _groupTagList    = new();
     private List<int>         _expandedIds = new();
     private int               _selectedId;
     private int _selectedSessionId;
@@ -105,9 +112,8 @@ public class TagTree : ViewModelBase
         RootDirs.Clear();
         SearchedTags.Clear();
         Tags.Clear();
-        //g.ResetCtx();
-        _tagList = new TagService().GetAll().ToList();
-        _dirList = new DirService().GetAll().ToList();
+        _tagList = new TagService().GetAll();
+        _dirList = new DirService().GetAll();
         AssignTagsToDirs(_dirList, _tagList);
         BuildTree(_dirList);
         if (remember) RestoreExpandedAndSelectedDirsTags();
@@ -118,10 +124,9 @@ public class TagTree : ViewModelBase
         AdjustOrders();
         if (remember) RememberSelectedSession();
         Sessions.Clear();
-        //g.ResetCtx();
-        _sessionList = new SessionService().GetAll().ToList();
+        _sessionList = new SessionService().GetAll();
         _groupList   = new GroupService().GetAll().OrderBy(x => x.Order).ToList();
-        _partTags    = new GroupTagService().GetAll().OrderBy(x => x.Order).ToList();
+        _groupTagList    = new GroupTagService().GetAll().OrderBy(x => x.Order).ToList();
         BuildSessions(_sessionList);
         if (remember) RestoreSelectedSession();
     }
@@ -192,7 +197,7 @@ public class TagTree : ViewModelBase
             x.UI_SessionGroups.AddRange(_groupList.Where(c => c.IdSession == x.Id));
             foreach (var c in x.UI_SessionGroups)
             {
-                c.UI_GroupTags.AddRange(_partTags.Where(v => v.IdGroup == c.Id));
+                c.UI_GroupTags.AddRange(_groupTagList.Where(v => v.IdGroup == c.Id));
                 foreach (var v in c.UI_GroupTags) v.UI_Tag = _tagList.FirstOrDefault(b => b.Id == v.IdTag);
             }
         }
@@ -204,8 +209,12 @@ public class TagTree : ViewModelBase
 
     public void DragStart(UI_Group? group, UI_Tag tag, DragObject dragObject)
     {
-        SourceDragGroup   = group;
-        DraggedTag        = tag;
+        if (g.TagTree.Sessions.SelectedItem == null)
+            return;
+        SourceDragGroup = group != null ? g.TagTree._groupList.FirstOrDefault(x => x.Id == group.Id) : null;
+        DraggedTag      = g.TagTree._tagList.FirstOrDefault(x => x.Id == tag.Id);
+        var dgt = g.TagTree._groupTagList.FirstOrDefault(_ => _.IdTag == DraggedTag.Id);
+        DraggedGroupTag   = dgt == null ? new UI_GroupTag(tag) : dgt;
         LastGroup         = SourceDragGroup;
         DraggedTag.IsDrag = true;
         _dragObject       = dragObject;
@@ -213,13 +222,22 @@ public class TagTree : ViewModelBase
 
     public void DragStart(UI_Group group, DragObject dragObject)
     {
-        SourceDragGroup = group;
+        SourceDragGroup = group != null ? g.TagTree._groupList.FirstOrDefault(x => x.Id == group.Id) : null;
         _dragObject     = dragObject;
     }
 
     public void DragEnd()
     {
+        if (LastGroup != null && DraggedGroupTag != null && DraggedGroupTag.Id != 0)
+        {
+            DraggedGroupTag.IdGroup = LastGroup.Id;
+            DraggedGroupTag.Group = LastGroup;
+            DraggedGroupTag.Save();
+        }
+
         AdjustOrders();
+        if (g.TagTree._groupTagList.Count(_ => _.Id == DraggedGroupTag.Id) == 0)
+            g.TagTree._groupTagList.Add(DraggedGroupTag);
         SourceDragGroup = null;
         if (DraggedTag == null) return;
         DraggedTag.IsDrag = false;
@@ -239,16 +257,16 @@ public class TagTree : ViewModelBase
                 {
                     LastGroup = group;
                     if (group.UI_GroupTags.All(x => x.IdTag != DraggedTag.Id))
-                        group.UI_GroupTags.Add(new UI_GroupTag(DraggedTag, group.UI_GroupTags.Count + 1));
+                        group.UI_GroupTags.Add(DraggedGroupTag);
                 }
                 else
                 {
                     if (LastGroup != group)
                     {
                         foreach (var x in Sessions.SelectedItem.UI_SessionGroups)
-                            x.UI_GroupTags.Remove(x.UI_GroupTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
+                            x.UI_GroupTags.Remove(DraggedGroupTag);
                         LastGroup = group;
-                        group.UI_GroupTags.Add(new UI_GroupTag(DraggedTag, group.UI_GroupTags.Count + 1));
+                        group.UI_GroupTags.Add(DraggedGroupTag);
                     }
                 }
             }
@@ -258,15 +276,15 @@ public class TagTree : ViewModelBase
                 if (LastGroup == null)
                 {
                     foreach (var x in Sessions.SelectedItem.UI_SessionGroups)
-                        x.UI_GroupTags.Remove(x.UI_GroupTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
+                        x.UI_GroupTags.Remove(DraggedGroupTag);
                     LastGroup = group; 
                     if (group.UI_GroupTags.All(x => x.IdTag != DraggedTag.Id))
-                        group.UI_GroupTags.Add(new UI_GroupTag(DraggedTag, group.UI_GroupTags.Count + 1));
+                        group.UI_GroupTags.Add(DraggedGroupTag);
                 }
                 else if(LastGroup == group)
                 {
                     if (group.UI_GroupTags.All(x => x.IdTag != DraggedTag.Id))
-                        group.UI_GroupTags.Insert(group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == tag.Id)), new UI_GroupTag(DraggedTag, group.UI_GroupTags.Count + 1));
+                        group.UI_GroupTags.Insert(group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == tag.Id)), DraggedGroupTag);
                     else
                         group.UI_GroupTags.Move(group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == DraggedTag.Id)), group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == tag.Id)));
                 }
@@ -275,7 +293,7 @@ public class TagTree : ViewModelBase
                     foreach (var x in Sessions.SelectedItem.UI_SessionGroups)
                         x.UI_GroupTags.Remove(x.UI_GroupTags.FirstOrDefault(c => c.IdTag == DraggedTag.Id));
                     LastGroup = group; 
-                    group.UI_GroupTags.Insert(group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == tag.Id)), new UI_GroupTag(DraggedTag, group.UI_GroupTags.Count + 1));
+                    group.UI_GroupTags.Insert(group.UI_GroupTags.IndexOf(group.UI_GroupTags.FirstOrDefault(x => x.IdTag == tag.Id)), DraggedGroupTag);
                 }
             }
         }

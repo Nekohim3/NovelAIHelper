@@ -136,7 +136,6 @@ public class MainWindowViewModel : ViewModelBase
         g.TagTree.Sessions.SelectedItem.UI_SessionGroups.Remove(group);
         group.Delete();
         g.TagTree.Sessions.SelectedItem.Save();
-        //group.Delete();
         g.TagTree.LoadSessions(true);
     }
 

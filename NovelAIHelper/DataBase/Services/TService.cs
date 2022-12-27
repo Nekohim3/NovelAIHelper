@@ -14,17 +14,14 @@ public class TService<T, TT> where T : IdEntity where TT : T
 {
     static TService() { g.AddMapper<T, TT>(); }
 
-    public virtual IList<TT> GetAll()
+    public virtual List<TT> GetAll()
     {
         using var ctx = new TagContext();
         return ctx.Set<T>().ProjectTo<TT>(g.GetMap<TT>()).AsEnumerable().ToList();
     }
-
-    //public virtual bool Add(TT tt) => Add((T)tt);
+    
     public virtual bool AddRange(IList<TT> ttList) => SaveRange(ttList.OfType<T>().ToList());
-    //public virtual bool Save(TT             tt)     => Save((T)tt);
     public virtual bool SaveRange(IList<TT> ttList) => SaveRange(ttList.OfType<T>().ToList());
-    //public virtual bool Delete(TT             tt)     => Delete((T)tt);
     public virtual bool DeleteRange(IList<TT> ttList) => DeleteRange(ttList.OfType<T>().ToList());
 
     public virtual bool Add(T t) => Save(t);
@@ -35,14 +32,14 @@ public class TService<T, TT> where T : IdEntity where TT : T
             ctx.Add(t);
         else
         {
-            try
-            {
-                ctx.Attach(t);
-            }
-            catch (Exception e)
-            {
+            //try
+            //{
+            //    ctx.Attach(t);
+            //}
+            //catch (Exception e)
+            //{
                 
-            }
+            //}
             ctx.Update(t);
         }
 
@@ -56,7 +53,7 @@ public class TService<T, TT> where T : IdEntity where TT : T
         var       news = tList.Where(x => x.Id == 0);
         var       olds = tList.Where(x => x.Id != 0);
         ctx.AddRange(news);
-        ctx.AttachRange(olds);
+        //ctx.AttachRange(olds);
         ctx.UpdateRange(olds);
         return ctx.SaveChanges() > 0;
     }

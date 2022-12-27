@@ -26,6 +26,7 @@ public static class g
 
     static g()
     {
+        //new TagContext(true);
         //Ctx     = new TagContext();
         TagTree = new TagTree();
     }

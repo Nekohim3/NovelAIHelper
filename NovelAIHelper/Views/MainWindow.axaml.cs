@@ -42,18 +42,20 @@ public partial class MainWindow : Window
             {
                 _startPos   = new Point(e.GetPosition(this));
                 _captured   = true;
-                _tag        = tagGrid.DataContext as UI_Tag;
-                _group   = tagCtrl.DataContext as UI_Group;
+                _tag       = (tagGrid.DataContext as UI_GroupTag).UI_Tag;
+                _group      = tagCtrl.DataContext as UI_Group;
                 _dragObject = DragObject.Tag;
             }
             else
             {
+                _tag = (tagGrid.DataContext as UI_GroupTag).UI_Tag;
                 var res = await MessageBoxManager
-                                .GetMessageBoxStandardWindow("", $"Remove tag: \"{_group.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
+                                .GetMessageBoxStandardWindow("", $"Remove tag: \"{_tag.Name}\"?", ButtonEnum.YesNo, MessageBox.Avalonia.Enums.Icon.Question)
                                 .ShowDialog(this);
                 if (res == ButtonResult.Yes)
                 {
 
+                    
                     //var vm = (DataContext as MainWindowViewModel).TagTree.Sessions.SelectedItem;
                     //vm.UI_SessionParts.Remove(_sessionPart);
                     //var vm = (DataContext as MainWindowViewModel).TagGroupVM;
@@ -147,7 +149,7 @@ public partial class MainWindow : Window
             if (_dragObject is DragObject.Tag or DragObject.SearchedTag)
             {
                 e.DragEffects = DragDropEffects.Move;
-                g.TagTree.DragOver(tagCtrl.DataContext as UI_Group, tagGrid.DataContext as UI_Tag);
+                g.TagTree.DragOver(tagCtrl.DataContext as UI_Group, (tagGrid.DataContext as UI_GroupTag).UI_Tag);
             }
             else
             {
